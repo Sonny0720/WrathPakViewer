@@ -9,14 +9,14 @@ Current capabilities: Android file picker, ASCII string browsing/search with hex
 This is an early prototype. The parser has a 150 MB safety cap and may use considerable memory for large files.
 
 
-## Version 2.2
+## Version 2.3
 
 Open PAK is followed by Export Everything, Models, Textures, Rigs, and
-Animation (Raw). Export Everything also preserves audio, metadata, and the
+Animation Data, and Audio. Export Everything also preserves audio, metadata, and the
 original PAK in its other-assets ZIP.
 
 Rigs export joint names, parent links, stored matrices, and skeleton line
-previews. Animation exports indexed raw clip records. The three character
+previews. Animation Data exports indexed JSON clips containing the track directory and compressed codec bytes. Audio exports original WAV files in a dedicated ZIP. The three character
 samples yielded 312 joints and 203 animation records, including interface clips.
 Skin weights and playable keyframes remain under research.
 

@@ -1,3 +1,5 @@
+import base64
+import json
 import csv
 import io
 import os
@@ -153,5 +155,26 @@ class TextureTests(unittest.TestCase):
                         self.assertEqual(len(clips), 66)
                         for clip in clips:
                             start, length = int(clip['record_offset']), int(clip['record_bytes'])
-                            self.assertEqual(child.read(clip['file']), data[start:start+length])
+                            entry = clip['file']
+                            self.assertTrue(entry.endswith('.json'))
+                            parsed = json.loads(child.read(entry))
+                            packed = base64.b64decode(parsed['packed_base64'], validate=True)
+                            self.assertEqual(packed, data[start+length-8-len(packed):start+length-8])
+                            self.assertEqual(len(parsed['tracks']), parsed['track_count'])
+                            for track in parsed['tracks']:
+                                self.assertLessEqual(track['offset']+track['bytes'], len(packed))
                     if category=='other':self.assertEqual(child.read('original/source.pak'),data)
+
+    @unittest.skipUnless(os.environ.get('WRATH_PAK_DIR'),'Original archives not committed')
+    def test_audio_only_export_preserves_source_waves(self):
+        data = next(Path(os.environ['WRATH_PAK_DIR']).glob('*cyclops*.pak')).read_bytes()
+        with self.export(data, 'audio') as archive:
+            rows = list(csv.DictReader(io.StringIO(archive.read('audio/index.csv').decode())))
+            self.assertEqual(len(rows), 116)
+            for row in rows:
+                start, size = int(row['offset']), int(row['length'])
+                wave = archive.read(row['file'])
+                self.assertEqual(wave[:4], b'RIFF')
+                self.assertEqual(wave[8:12], b'WAVE')
+                self.assertEqual(wave, data[start:start+size])
+            self.assertFalse(any(name.startswith('original/') for name in archive.namelist()))

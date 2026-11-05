@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
 
   @Override public void onCreate(Bundle state){super.onCreate(state);
     LinearLayout root=new LinearLayout(this);root.setOrientation(1);root.setPadding(16,12,16,12);
-    TextView title=new TextView(this);title.setText("WrathPakViewer · v2.2");title.setTextSize(22);root.addView(title);
+    TextView title=new TextView(this);title.setText("WrathPakViewer · v2.3");title.setTextSize(22);root.addView(title);
     Button open=button(root,"OPEN PAK FILE");open.setOnClickListener(v->{
       if(busy){Toast.makeText(this,"Wait for the current operation",Toast.LENGTH_SHORT).show();return;}
       busy=true;Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);i.setType("*/*");i.addCategory(Intent.CATEGORY_OPENABLE);startActivityForResult(i,OPEN);
@@ -28,8 +28,9 @@ public class MainActivity extends Activity {
     button(root,"EXPORT MODELS").setOnClickListener(v->requestSave("models","wrath_models.zip","application/zip"));
     button(root,"EXPORT TEXTURES").setOnClickListener(v->requestSave("textures","wrath_textures.zip","application/zip"));
     button(root,"EXPORT RIGS").setOnClickListener(v->requestSave("rigs","wrath_rigs.zip","application/zip"));
-    button(root,"EXPORT ANIMATION (RAW)").setOnClickListener(v->requestSave("animation","wrath_animation_raw.zip","application/zip"));
-    output=new TextView(this);output.setText("Models include OBJ, MTL and matching textures. Textures export as PNG and DDS. Rigs export skeleton tables and previews. Animation exports raw clip records. Export Everything preserves audio, metadata and the original archive.");root.addView(output);
+    button(root,"EXPORT ANIMATION DATA").setOnClickListener(v->requestSave("animation","wrath_animation.zip","application/zip"));
+    button(root,"EXPORT AUDIO").setOnClickListener(v->requestSave("audio","wrath_audio.zip","application/zip"));
+    output=new TextView(this);output.setText("Models include OBJ, MTL and matching textures. Textures export as PNG and DDS. Rigs export skeleton tables and previews. Animation exports JSON with packed tracks. Audio exports WAV files. Export Everything preserves audio, metadata and the original archive.");root.addView(output);
     ScrollView page=new ScrollView(this);page.addView(root);setContentView(page);
   }
   private Button button(LinearLayout parent,String label){Button b=new Button(this);b.setText(label);parent.addView(b);return b;}

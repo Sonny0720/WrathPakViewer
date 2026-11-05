@@ -15,10 +15,10 @@ path: total record size, a secondary length, zero, and path byte length.
 The observed relation is total size = secondary length + path length + 32.
 The path is followed by eight bytes and a zero-padded 32-byte clip name.
 For contiguous clips, the total size lands exactly on the next header.
-Exports preserve the complete byte range starting at the header. The
-secondary length is retained without assigning it a track or frame meaning.
+The clip index preserves the complete source range and secondary length.
+Export Everything keeps the original PAK for source comparisons.
 
-| Archive | Joint count | Raw clip records |
+| Archive | Joint count | JSON clip files |
 | --- | ---: | ---: |
 | Cyclops | 98 | 66 |
 | Centaur | 88 | 68 |
@@ -27,3 +27,18 @@ secondary length is retained without assigning it a track or frame meaning.
 Clip totals include interface records. Remaining work is locating the track
 headers and interpreting time, rotation, and translation keys, then testing
 the decoded motion against the recovered skeleton and skin weights.
+
+## Packed clip directory
+
+Relative to the end of the outer 32-byte clip name, the inner header begins
+at byte 256. The value at 260 is 303185 in the three samples. The length word
+at 264 gives the size of the packed region starting at that word and ending
+eight bytes before the next record. The inner name at 268 matches the outer
+name. A float at 256 repeats at 300. Its timing units are unconfirmed.
+The low 16 bits at 308 give the track count. The directory at 416 starts with
+a sentinel of 0xffffffff, followed by one relative offset per track. Offsets
+are relative to byte 264. Each track starts with its own byte length.
+
+The JSON contains the track offsets, lengths, and packed region in Base64.
+Track-to-joint mapping, time units and keyframe compression still need
+verification before export to a playable animation format.

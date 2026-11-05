@@ -2,7 +2,8 @@ package com.wrath.pakviewer;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.zip.ZipEntry;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.zip.ZipOutputStream;
 
 final class WrathMotion {
@@ -116,17 +117,60 @@ final class WrathMotion {
             int nameOffset = pathOffset + (int) pathLength + 8;
             String clip = name.substring(0, name.length() - ANIMATION_SUFFIX.length());
             if (!clip.equalsIgnoreCase(jointName(data, nameOffset))) continue;
-            String entry = "raw/" + Integer.toHexString(start) + "_" + name + ".bin";
-            zip.putNextEntry(new ZipEntry(entry));
-            zip.write(data, start, (int) size);
-            zip.closeEntry();
+            int end = start + (int) size;
+            String entry = "clips/" + Integer.toHexString(start) + "_" + clip + ".json";
+            String json = clipJson(data, nameOffset + 32, end, clip);
+            if (json != null) {
+                WrathExports.text(zip, entry, json);
+            } else {
+                entry = "";
+            }
             index.append(path).append(',').append(start).append(',').append(size).append(',')
                 .append(lengthField).append(',').append(entry).append('\n');
             pathOffset = start + (int) size - 1;
         }
         WrathExports.text(zip, "clips.csv", index.toString());
         WrathExports.text(zip, "README.txt", "Keyframe decoding is not implemented.\n"
-            + "Each .bin contains an original .boneanim container record, including its PAK header and path.\n"
-            + "Clip names and byte ranges are in clips.csv.\n");
+            + "JSON clips contain a validated track directory and packed codec bytes in Base64.\n"
+            + "These research files require a codec decoder for playback.\n"
+            + "An empty file column in clips.csv indicates an unsupported clip layout.\n");
+    }
+
+    private static String clipJson(byte[] data, int header, int end, String name) {
+        // The serialized wrapper carries 256 bytes before the codec header.
+        if (end - header < 420 || WrathTextures.u32(data, header + 260) != 303185) return null;
+        int base = header + 264;
+        long packedLength = WrathTextures.u32(data, base);
+        int packedEnd = end - 8;
+        float time = value(data, header + 256);
+        if (base + packedLength != packedEnd || !Float.isFinite(time) || time < 0
+                || WrathTextures.u32(data, header + 256) != WrathTextures.u32(data, header + 300)
+                || !name.equalsIgnoreCase(jointName(data, header + 268))) return null;
+
+        int count = (int) (WrathTextures.u32(data, header + 308) & 65535);
+        int directory = header + 416;
+        long directoryEnd = directory + 4L * (count + 1);
+        if (count == 0 || count > 512 || directoryEnd > packedEnd
+                || WrathTextures.u32(data, header + 312) != 156
+                || WrathTextures.u32(data, directory) != 0xffffffffL) return null;
+
+        StringBuilder json = new StringBuilder("{\n  \"format\": \"wrath-packed-clip-v1\",\n  \"name\": \"")
+            .append(name).append("\",\n  \"time_value\": ").append(time)
+            .append(",\n  \"track_count\": ").append(count).append(",\n  \"tracks\": [");
+        long previousEnd = directoryEnd;
+        for (int i = 0; i < count; i++) {
+            long relative = WrathTextures.u32(data, directory + (i + 1) * 4);
+            long track = base + relative;
+            if (track < previousEnd || track + 4 > packedEnd) return null;
+            long length = WrathTextures.u32(data, (int) track);
+            if (length < 32 || track + length > packedEnd) return null;
+            previousEnd = track + length;
+            if (i > 0) json.append(',');
+            json.append("\n    {\"offset\": ").append(relative)
+                .append(", \"bytes\": ").append(length).append('}');
+        }
+        return json.append("\n  ],\n  \"packed_base64\": \"")
+            .append(Base64.getEncoder().encodeToString(Arrays.copyOfRange(data, base, packedEnd)))
+            .append("\"\n}\n").toString();
     }
 }
