@@ -36,12 +36,13 @@ public class MainActivity extends Activity {
 
   @Override public void onCreate(Bundle state){super.onCreate(state);
     LinearLayout root=new LinearLayout(this);root.setOrientation(1);root.setPadding(16,12,16,12);
-    TextView title=new TextView(this);title.setText("Wrath Unleashed PAK Inspector · v1.4");title.setTextSize(20);root.addView(title);
+    TextView title=new TextView(this);title.setText("Wrath Unleashed PAK Inspector · v1.7");title.setTextSize(20);root.addView(title);
     Button open=button(root,"OPEN .PAK FILE");open.setOnClickListener(v->{Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);i.setType("*/*");i.addCategory(Intent.CATEGORY_OPENABLE);startActivityForResult(i,OPEN);});
     status=new TextView(this);status.setText("No PAK loaded");root.addView(status);
-    mode=new Spinner(this);mode.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,new String[]{"Audio assets","Non-audio binary regions","Other signatures","Readable strings","PAK indexed names","Asset name clues","PAK structure","Validated textures","Name references","Binary block map","WAVE format details","Reference contexts","Float triplet candidates"}));root.addView(mode);
+    mode=new Spinner(this);mode.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,new String[]{"Audio assets","Non-audio binary regions","Other signatures","Readable strings","PAK indexed names","Asset name clues","PAK structure","Validated textures","Name references","Binary block map","WAVE format details","Reference contexts","Float triplet candidates","Post-index name IDs"}));root.addView(mode);
     filter=new EditText(this);filter.setSingleLine(true);filter.setHint("Search names / offsets / strings");root.addView(filter);
     button(root,"SEARCH / LIST").setOnClickListener(v->showResults());
+    button(root,"EXPORT POST-INDEX NAME IDS (CSV)").setOnClickListener(v->requestSave("postids","wrath_post_index_name_ids.csv","text/csv"));
     button(root,"EXPORT FLOAT TRIPLETS (CSV)").setOnClickListener(v->requestSave("triplets","wrath_float_triplet_candidates.csv","text/csv"));
     button(root,"EXPORT REFERENCE CONTEXTS (CSV)").setOnClickListener(v->requestSave("contexts","wrath_reference_contexts.csv","text/csv"));
     button(root,"EXPORT WAVE DETAILS (CSV)").setOnClickListener(v->requestSave("wavedetails","wrath_wave_details.csv","text/csv"));
@@ -68,7 +69,7 @@ public class MainActivity extends Activity {
   @Override protected void onActivityResult(int request,int result,Intent intent){super.onActivityResult(request,result,intent);if(result!=RESULT_OK||intent==null||intent.getData()==null)return;
     if(request==OPEN){Uri uri=intent.getData();fileName="selected.pak";try(android.database.Cursor c=getContentResolver().query(uri,new String[]{android.provider.OpenableColumns.DISPLAY_NAME},null,null,null)){if(c!=null&&c.moveToFirst())fileName=c.getString(0);}catch(Exception ignored){}
       status.setText("Reading...");new Thread(()->{try(InputStream in=getContentResolver().openInputStream(uri);ByteArrayOutputStream bytes=new ByteArrayOutputStream()){byte[] buf=new byte[65536];int n;while((n=in.read(buf))!=-1){bytes.write(buf,0,n);if(bytes.size()>150_000_000)throw new IOException("PAK exceeds 150 MB memory limit");}data=bytes.toByteArray();scan();runOnUiThread(()->{status.setText(fileName+" · "+data.length+" bytes");showResults();});}catch(Exception e){runOnUiThread(()->status.setText("Open failed: "+e.getMessage()));}}).start();
-    }else if(request==SAVE){Uri uri=intent.getData();String type=pendingType;status.setText("Exporting...");new Thread(()->{try(OutputStream raw=getContentResolver().openOutputStream(uri)){if(raw==null)throw new IOException("Cannot open destination");if("csv".equals(type)){writeCsv(raw);}else if("names".equals(type)){writeIndexedNames(raw);}else if("clues".equals(type)){writeAssetClues(raw);}else if("references".equals(type)){writeNameReferences(raw);}else if("blocks".equals(type)){writeBlockMap(raw);}else if("wavedetails".equals(type)){writeWaveDetails(raw);}else if("contexts".equals(type)){writeReferenceContexts(raw);}else if("triplets".equals(type)){writeFloatTriplets(raw);}else{try(ZipOutputStream zip=new ZipOutputStream(new BufferedOutputStream(raw))){if("research".equals(type))writeResearchZip(zip);else if("clean".equals(type))writeCleanZip(zip);else if("textures".equals(type))writeTexturesZip(zip);else writeZip(zip,"all".equals(type),"raw".equals(type));}}runOnUiThread(()->status.setText("Export complete: "+type));}catch(Exception e){runOnUiThread(()->status.setText("Export failed: "+e.getMessage()));}}).start();}
+    }else if(request==SAVE){Uri uri=intent.getData();String type=pendingType;status.setText("Exporting...");new Thread(()->{try(OutputStream raw=getContentResolver().openOutputStream(uri)){if(raw==null)throw new IOException("Cannot open destination");if("csv".equals(type)){writeCsv(raw);}else if("names".equals(type)){writeIndexedNames(raw);}else if("clues".equals(type)){writeAssetClues(raw);}else if("references".equals(type)){writeNameReferences(raw);}else if("blocks".equals(type)){writeBlockMap(raw);}else if("wavedetails".equals(type)){writeWaveDetails(raw);}else if("contexts".equals(type)){writeReferenceContexts(raw);}else if("triplets".equals(type)){writeFloatTriplets(raw);}else if("postids".equals(type)){writePostIndexIds(raw);}else{try(ZipOutputStream zip=new ZipOutputStream(new BufferedOutputStream(raw))){if("research".equals(type))writeResearchZip(zip);else if("clean".equals(type))writeCleanZip(zip);else if("textures".equals(type))writeTexturesZip(zip);else writeZip(zip,"all".equals(type),"raw".equals(type));}}runOnUiThread(()->status.setText("Export complete: "+type));}catch(Exception e){runOnUiThread(()->status.setText("Export failed: "+e.getMessage()));}}).start();}
   }
   private boolean has(int at,String magic){if(at<0||at+magic.length()>data.length)return false;for(int j=0;j<magic.length();j++)if((data[at+j]&255)!=magic.charAt(j))return false;return true;}
   private long u32(int p){return ((long)data[p]&255)|(((long)data[p+1]&255)<<8)|(((long)data[p+2]&255)<<16)|(((long)data[p+3]&255)<<24);}
@@ -98,6 +99,7 @@ public class MainActivity extends Activity {
     if(mode.getSelectedItemPosition()==0){for(int j=0;j<waves.size();j++){Asset a=waves.get(j);String line=String.format(Locale.US,"audio_%03d.wav  offset 0x%08X  size %d  format 0x%04X",j+1,a.offset,a.length,a.format);if(line.toLowerCase(Locale.ROOT).contains(query)){sb.append(line).append('\n');if(++shown>=400)break;}}}
     else if(mode.getSelectedItemPosition()==1){for(int j=0;j<regions.size();j++){Asset a=regions.get(j);String line=String.format(Locale.US,"region_%03d.bin  offset 0x%08X  size %d (unidentified raw data)",j+1,a.offset,a.length);if(line.toLowerCase(Locale.ROOT).contains(query)){sb.append(line).append('\n');if(++shown>=400)break;}}}
     else if(mode.getSelectedItemPosition()==6){sb.append(structureReport());}
+    else if(mode.getSelectedItemPosition()==13){for(String line:postIndexIdPreview()){if(line.toLowerCase(Locale.ROOT).contains(query)){sb.append(line).append('\n');if(++shown>=400)break;}}}
     else if(mode.getSelectedItemPosition()==12){for(String line:floatTripletPreview()){if(line.toLowerCase(Locale.ROOT).contains(query)){sb.append(line).append('\n');if(++shown>=400)break;}}}
     else if(mode.getSelectedItemPosition()==11){for(String line:referenceContextPreview()){if(line.toLowerCase(Locale.ROOT).contains(query)){sb.append(line).append('\n');if(++shown>=400)break;}}}
     else if(mode.getSelectedItemPosition()==10){for(String line:audioDetails){if(line.toLowerCase(Locale.ROOT).contains(query)){sb.append(line).append('\n');if(++shown>=400)break;}}}
@@ -136,7 +138,7 @@ public class MainActivity extends Activity {
   // name-table-relative form. These are hypotheses, not proven pointers.
   private void scanNameReferences(){
     if(indexedNames.isEmpty())return;
-    long count=u32(24), base=28L+4L*count, namesEnd=u32(8);
+    long count=u32(24), base=28L+4L*count, namesEnd=base+u32(8);
     HashMap<Long,String> absolute=new HashMap<>(),relative=new HashMap<>();
     for(String entry:indexedNames){
       try{String[] parts=entry.split("  ",3);long off=Long.parseLong(parts[1].substring(2),16);
@@ -235,6 +237,41 @@ public class MainActivity extends Activity {
   private void showHex(){if(data==null)return;try{String s=hexOffset.getText().toString().trim().replaceFirst("(?i)^0x","");long val=Long.parseLong(s,16);if(val<0||val>=data.length)throw new IllegalArgumentException("Offset outside PAK");int off=(int)val;StringBuilder sb=new StringBuilder(String.format(Locale.US,"Hex at 0x%08X\n\n",off));for(int p=off;p<Math.min(data.length,off+512);p+=16){sb.append(String.format(Locale.US,"%08X  ",p));for(int k=0;k<16;k++)sb.append(p+k<data.length?String.format(Locale.US,"%02X ",data[p+k]&255):"   ");sb.append("  ");for(int k=0;k<16&&p+k<data.length;k++){int c=data[p+k]&255;sb.append(c>=32&&c<=126?(char)c:'.');}sb.append('\n');}output.setText(sb.toString());}catch(Exception e){Toast.makeText(this,"Enter a valid hex offset",Toast.LENGTH_SHORT).show();}}
   private void writeCsv(OutputStream out)throws IOException{out.write("offset_hex,text\n".getBytes(StandardCharsets.UTF_8));for(String line:strings){int split=line.indexOf("  ");if(split<0)continue;String escaped=line.substring(split+2).replace("\"","\"\"");out.write((line.substring(0,split)+",\""+escaped+"\"\n").getBytes(StandardCharsets.UTF_8));}}
   private void addText(ZipOutputStream zip,String path,String text)throws IOException{zip.putNextEntry(new ZipEntry(path));zip.write(text.getBytes(StandardCharsets.UTF_8));zip.closeEntry();}
+  // A validated u16 table immediately after the name string block.
+  // These are name IDs, not mesh offsets or proof of resource payload types.
+  private int[] postIndexIds(){
+    if(data==null||data.length<32||u32(0)!=335945||indexedNames.isEmpty())return new int[0];
+    long start=28L+4L*u32(24)+u32(8);
+    if(start<0||start+8>data.length)return new int[0];
+    long capacity=u32((int)start), count=u32((int)start+4);
+    if(capacity<1||capacity>65536||count<1||count>capacity||count>indexedNames.size()||start+8+2L*count>data.length)return new int[0];
+    int[] ids=new int[(int)count];java.util.HashSet<Integer> seen=new java.util.HashSet<>();
+    for(int i=0;i<ids.length;i++){
+      int id=u16((int)start+8+2*i);
+      if(id>=indexedNames.size()||!seen.add(id))return new int[0];
+      ids[i]=id;
+    }
+    return ids;
+  }
+  private String indexedNameAt(int id){
+    if(id<0||id>=indexedNames.size())return "";
+    String line=indexedNames.get(id);int pos=line.indexOf("  ",7);
+    return pos>=0?line.substring(pos+2):line;
+  }
+  private java.util.ArrayList<String> postIndexIdPreview(){
+    java.util.ArrayList<String> result=new java.util.ArrayList<>();int[] ids=postIndexIds();
+    for(int i=0;i<ids.length;i++)result.add(String.format(Locale.US,"%04d  ID %d  %s",i,ids[i],indexedNameAt(ids[i])));
+    if(ids.length==0)result.add("No validated post-index ID table found");
+    return result;
+  }
+  private void writePostIndexIds(OutputStream out)throws IOException{
+    out.write("entry_index,name_id,name\n".getBytes(StandardCharsets.UTF_8));
+    int[] ids=postIndexIds();
+    for(int i=0;i<ids.length;i++){
+      String name=indexedNameAt(ids[i]).replace("\"","\"\"");
+      out.write((i+","+ids[i]+",\""+name+"\"\n").getBytes(StandardCharsets.UTF_8));
+    }
+  }
   // Clean export never invents model/animation formats or renames arbitrary data.
   // Research export: inspect plausible header/offset fields without claiming asset types.
   // Describes confirmed header/name-table boundaries without assuming mesh layouts.
@@ -245,6 +282,13 @@ public class MainActivity extends Activity {
     long namesEnd=tableEnd+namesLength;
     StringBuilder sb=new StringBuilder();
     sb.append(String.format(Locale.US,"PAK structure (observations, not a decoded asset directory)\nMagic: 0x%08X\nActual length: %d\nHeader length field: %d (%s)\nName pointer table: 0x%08X..0x%08X\nName count: %d\nName bytes end (computed): 0x%08X\nIndexed names validated: %d\n",u32(0),data.length,declared,declared==data.length?"matches":"DIFFERS",tableStart,tableEnd,count,namesEnd,indexedNames.size()));
+    sb.append("\nPost-name-index block (unverified):\n");
+    if(namesEnd+8<=data.length){
+      long first=u32((int)namesEnd),second=u32((int)namesEnd+4);
+      sb.append(String.format(Locale.US,"Block starts at 0x%08X; first words: 0x%08X (%d), 0x%08X (%d)\n",namesEnd,first,first,second,second));
+      sb.append("Observed after the name index in the supplied PAK samples. The following data contains small integer values and further strings; its record boundaries and semantics are NOT yet established.\n");
+    }
+    sb.append("\nValidated post-index name ID entries: ").append(postIndexIds().length).append(" (16-bit IDs, not resource offsets)\n");
     sb.append("\nThese offsets identify the NAME INDEX, not model/texture/animation payloads.\n");
     if(tableEnd>data.length||namesEnd>data.length||tableEnd>namesEnd)sb.append("WARNING: name table boundaries inconsistent\n");
     sb.append("\nHeader words (little-endian):\n");
@@ -346,6 +390,7 @@ public class MainActivity extends Activity {
     addText(zip,"research/header_u32.csv",header.toString());
     addText(zip,"research/structure_report.txt",structureReport());
     writeJsonIndex(zip);
+    ByteArrayOutputStream postIds=new ByteArrayOutputStream();writePostIndexIds(postIds);addText(zip,"research/post_index_name_ids.csv",postIds.toString("UTF-8"));
     java.io.ByteArrayOutputStream indexed=new java.io.ByteArrayOutputStream();writeIndexedNames(indexed);
     addText(zip,"research/indexed_names.csv",indexed.toString("UTF-8"));
     java.io.ByteArrayOutputStream clues=new java.io.ByteArrayOutputStream();writeAssetClues(clues);addText(zip,"research/asset_clues.csv",clues.toString("UTF-8"));
