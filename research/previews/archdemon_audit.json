@@ -3,21 +3,23 @@
   "sha256": "140f031cd070eb7d09c6f9ffee8be70b56dc54660c0d2a41fdbed51e4296e005",
   "status": "recognizability requires visual inspection; completeness unproven",
   "exports": [
-    "buffer_00.obj",
-    "buffer_01.obj",
-    "buffer_02.obj",
-    "buffer_03.obj",
-    "buffer_04.obj",
-    "C_Demon_C_DC_Demon_main_c_demon_msh.obj",
-    "C_Demon_C_DO_ArchDemo_low_c_demon_msh.obj",
-    "C_Demon_C_DO_Demon_main_c_demon_msh.obj"
+    "primary_model.obj",
+    "part_buffer_00.obj",
+    "part_buffer_01.obj",
+    "part_buffer_02.obj",
+    "part_buffer_03.obj",
+    "part_buffer_04.obj",
+    "parts_C_Demon_C_DC_Demon_main_c_demon_msh.obj",
+    "parts_C_Demon_C_DO_ArchDemo_low_c_demon_msh.obj",
+    "parts_C_Demon_C_DO_Demon_main_c_demon_msh.obj"
   ],
   "rejected": [],
   "buffers": [
     {
       "offset": 96643,
       "vertices": 6660,
-      "referenced_vertices": 5782,
+      "base_vertices": 5782,
+      "referenced_vertices": 6660,
       "source": "meshes\\chars\\c_demon.msh",
       "variant": "C_Demon_C_DC_Demon_main",
       "groups": [
@@ -32,7 +34,8 @@
               "strip_indices": [
                 724
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 36617,
@@ -40,7 +43,8 @@
               "strip_indices": [
                 434
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 38475,
@@ -48,7 +52,8 @@
               "strip_indices": [
                 138
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 39387,
@@ -56,7 +61,8 @@
               "strip_indices": [
                 222
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 40371,
@@ -64,7 +70,8 @@
               "strip_indices": [
                 405
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 42555,
@@ -72,7 +79,8 @@
               "strip_indices": [
                 161
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 43921,
@@ -80,7 +88,8 @@
               "strip_indices": [
                 23
               ],
-              "palette_entries": 20
+              "palette_entries": 20,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 2091
@@ -96,7 +105,8 @@
               "strip_indices": [
                 913
               ],
-              "palette_entries": 2
+              "palette_entries": 2,
+              "vertex_stream": "appended"
             },
             {
               "offset": 48914,
@@ -104,7 +114,8 @@
               "strip_indices": [
                 904
               ],
-              "palette_entries": 18
+              "palette_entries": 18,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1868
@@ -120,7 +131,8 @@
               "strip_indices": [
                 1033
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 57525,
@@ -128,7 +140,8 @@
               "strip_indices": [
                 377
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 59251,
@@ -136,7 +149,8 @@
               "strip_indices": [
                 32
               ],
-              "palette_entries": 9
+              "palette_entries": 9,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1307
@@ -152,7 +166,8 @@
               "strip_indices": [
                 419
               ],
-              "palette_entries": 6
+              "palette_entries": 6,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 405
@@ -168,13 +183,15 @@
               "strip_indices": [
                 22
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "appended"
             },
             {
               "offset": 62026,
               "list_indices": 18,
               "strip_indices": [],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 24
@@ -184,6 +201,7 @@
     {
       "offset": 350733,
       "vertices": 1421,
+      "base_vertices": 1421,
       "referenced_vertices": 1421,
       "source": "meshes\\chars\\c_demon.msh",
       "variant": "C_Demon_C_DC_Demon_main",
@@ -199,7 +217,8 @@
               "strip_indices": [
                 323
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 232
@@ -215,7 +234,8 @@
               "strip_indices": [
                 1133
               ],
-              "palette_entries": 9
+              "palette_entries": 9,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1149
@@ -229,7 +249,8 @@
               "offset": 350495,
               "list_indices": 96,
               "strip_indices": [],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 32
@@ -239,6 +260,7 @@
     {
       "offset": 409025,
       "vertices": 1436,
+      "base_vertices": 1436,
       "referenced_vertices": 1436,
       "source": "meshes\\chars\\c_demon.msh",
       "variant": "C_Demon_C_DO_Demon_main",
@@ -254,7 +276,8 @@
               "strip_indices": [
                 244
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 210
@@ -270,7 +293,8 @@
               "strip_indices": [
                 1271
               ],
-              "palette_entries": 8
+              "palette_entries": 8,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1028
@@ -286,7 +310,8 @@
               "strip_indices": [
                 397
               ],
-              "palette_entries": 8
+              "palette_entries": 8,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 314
@@ -302,7 +327,8 @@
               "strip_indices": [
                 25
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 20
@@ -312,6 +338,7 @@
     {
       "offset": 468698,
       "vertices": 1267,
+      "base_vertices": 1267,
       "referenced_vertices": 1267,
       "source": "meshes\\chars\\c_demon.msh",
       "variant": null,
@@ -327,7 +354,8 @@
               "strip_indices": [
                 62
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 48
@@ -343,7 +371,8 @@
               "strip_indices": [
                 276
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 464506,
@@ -351,7 +380,8 @@
               "strip_indices": [
                 139
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 465282,
@@ -359,7 +389,8 @@
               "strip_indices": [
                 110
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 465910,
@@ -367,7 +398,8 @@
               "strip_indices": [
                 80
               ],
-              "palette_entries": 16
+              "palette_entries": 16,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 633
@@ -383,7 +415,8 @@
               "strip_indices": [
                 205
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 467520,
@@ -391,7 +424,8 @@
               "strip_indices": [
                 78
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 468378,
@@ -399,7 +433,8 @@
               "strip_indices": [
                 27
               ],
-              "palette_entries": 8
+              "palette_entries": 8,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 373
@@ -409,6 +444,7 @@
     {
       "offset": 520324,
       "vertices": 1336,
+      "base_vertices": 1336,
       "referenced_vertices": 1336,
       "source": "meshes\\chars\\c_demon.msh",
       "variant": "C_Demon_C_DO_ArchDemo_low",
@@ -424,7 +460,8 @@
               "strip_indices": [
                 230
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 516769,
@@ -432,7 +469,8 @@
               "strip_indices": [
                 111
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 517405,
@@ -440,7 +478,8 @@
               "strip_indices": [
                 188
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 518147,
@@ -448,7 +487,8 @@
               "strip_indices": [
                 16
               ],
-              "palette_entries": 18
+              "palette_entries": 18,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 686
@@ -464,7 +504,8 @@
               "strip_indices": [
                 216
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 519592,
@@ -472,7 +513,8 @@
               "strip_indices": [
                 86
               ],
-              "palette_entries": 14
+              "palette_entries": 14,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 314
@@ -481,13 +523,15 @@
     }
   ],
   "visual_verification": {
-    "scope": "primary main assembly from first two character buffers",
+    "version": "2.0",
+    "scope": "primary main assembly",
     "views": [
-      "front",
-      "side",
-      "perspective"
+      "shaded front",
+      "shaded side",
+      "shaded perspective"
     ],
-    "result": "recognizable character geometry; completeness not established",
-    "preview": "characters.png"
+    "backface_culling": true,
+    "preview": "v2_shaded.png",
+    "result": "recognizable static geometry; full asset extraction unfinished"
   }
 }

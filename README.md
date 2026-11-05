@@ -9,9 +9,11 @@ Current capabilities: Android file picker, ASCII string browsing/search with hex
 This is an early prototype. The parser has a 150 MB safety cap and may use considerable memory for large files.
 
 
-## Character geometry
+## Version 2.0 character geometry
 
-The feature branch now includes an Xbox geometry OBJ ZIP export, tested against
-Cyclops, Centaur and Archdemon archives. Recognizable primary assemblies have
-been visually inspected. Rigging, textures, animation, PS2 layouts and complete
-archive coverage remain unfinished. See [geometry findings and reproduction](research/GEOMETRY.md).
+The feature branch includes Xbox OBJ ZIP extraction with corrected appended-vertex
+mapping, outward OBJ winding and generated normals. Open `models/primary_model.obj`
+in the exported ZIP; `parts/` variants may contain attachments only.
+Cyclops, Centaur and Archdemon primary models have been checked in shaded,
+backface-culled views. Textures, rigging, animation, PS2 support and complete
+archive coverage remain unfinished. See [findings and reproduction](research/GEOMETRY.md).

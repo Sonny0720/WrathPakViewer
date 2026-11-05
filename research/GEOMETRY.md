@@ -1,93 +1,132 @@
-# Xbox character geometry: 2026-11-05 findings
+# WrathPakViewer v2.0 — Xbox character geometry
 
-The primary Cyclops, Centaur and Archdemon assemblies are recognizable in front,
-side and perspective OBJ renders. This is a geometry milestone, **not complete
-PAK extraction**. The Android export uses the same Java class exercised by the
-desktop harness. Original PAKs and extracted OBJs are not committed here.
+v2.0 fixes two actual export defects demonstrated by the shaded Android
+screenshots: wrong vertex ranges for faces/eyes, and inside-out OBJ winding.
+The main Cyclops, Centaur and Archdemon assemblies have been inspected in shaded
+front, side and perspective views **with backface culling enabled**. The earlier
+wireframe preview was insufficient to establish correctness.
 
-![Decoded geometry, three views per character](previews/characters.png)
+![v2.0 shaded, culled geometry](previews/v2_shaded.png)
 
-## Correction to earlier research
+## Corrected serialization and vertex mapping
 
-The old `type/subtype/capacity/count` scan conflated nested array headers with a
-primitive enum. After a length-prefixed resource name, an optional `(4,0)` prefix
-is followed by a draw-container allocation/count pair. The count is the number
-of batches, not a list/strip selector. Each batch contains:
+Every named resource contains **two** draw-batch arrays, not an optional prefix
+followed by an arbitrary number of containers:
 
-1. An allocation/count pair and that many uint16 triangle-list indices.
-2. An allocation/count pair for a collection of triangle strips. Every strip has
-   its own allocation/count pair and uint16 indices.
-3. An allocation/count pair and a uint16 auxiliary table (called a palette in
-   diagnostics; its runtime semantics remain unverified).
-4. A zero trailer in these samples.
+1. Appended-vertex batches. Their indices are local to the appended vertex range.
+2. Main-vertex batches. Their indices address the main vertex range.
 
-Some resources have additional consecutive draw containers. For example, the
-Centaur head has three batches across multiple containers. Scanning only names
-or interpreting every apparent header as a separate list omitted these batches.
-Strip winding alternates across every input position, including degenerate
-stitching indices. List counts must divide by three; bad ranges reject the
-resource instead of silently dropping out-of-range triangles.
+An array begins with allocation/count uint32 fields. A zero first array appears
+as `(4,0)`; v1.9 incorrectly skipped it as a generic prefix and interpreted a
+nonzero first array against the main vertices. Both arrays must be consumed,
+including empty arrays.
 
-Vertex buffers have allocation/count fields, contiguous 32-byte records, a
-16-byte zero trailer and a subsequent repeated total count. Discovery checks
-these fields and finite XYZ/UV values at every byte alignment. XYZ occupies
-bytes 0–11 and UV occupies bytes 16–23. Other vertex fields are preserved only
-in the source; packed normals, weights and bone fields are not decoded.
-Coordinates are exported unchanged (Y up); OBJ texture V is flipped. No
-character-specific archive offsets or CSV inputs are required.
+Every batch contains a uint16 triangle-list array, an array of independently
+counted uint16 triangle strips, a uint16 auxiliary/palette array, and a zero
+trailer. The allocation/count pairs are not topology enums. Strip winding
+alternates across every input position, including degenerate stitching indices.
+List counts must divide by three. Invalid indices reject the resource; they are
+not silently dropped, including when the triangle would be degenerate.
 
-The implementation supports the observed allocation powers 128–65536 and vertex
-counts over 100. Smaller buffers and other serialization layouts are explicitly
-outside current discovery coverage. A character mesh path bounds associations,
-so Centaur's earlier weapon resources cannot be mapped to its body buffer.
+Buffers have contiguous 32-byte records. XYZ is at bytes 0–11, and UV at bytes
+16–23. After the records are 16 zero bytes, a **main vertex count**, and a repeated
+**total vertex count**. The difference gives the appended range size. Appended
+indices therefore need `main_vertex_count` added before indexing the records.
 
-## Verified primary assemblies
+| Sample | Main records | Appended records | Previously broken resources |
+| --- | ---: | ---: | --- |
+| Centaur body buffer | 4,654 | 614 | Head, part of torso, eyes |
+| Archdemon body buffer | 5,782 | 878 | Head/torso, eyes |
+| Cyclops body buffer | 2,158 | 0 | No appended range in this buffer |
 
-| Archive | Vertex records | Referenced records | Triangles | Assembly |
-| --- | ---: | ---: | ---: | --- |
-| Cyclops | 5,088 | 5,088 | 6,974 | Body plus armor/rigid buffer |
-| Centaur | 6,735 | 6,121 | 6,832 | Main LO body plus armor/rigid buffer |
-| Archdemon | 8,081 | 7,203 | 7,108 | Main DC body plus armor/rigid buffer |
+No character-specific offsets or corrective vertex shifts are used. The counts
+come from each serialized buffer. All 13 discovered character buffers across the
+three samples now reference **every** stored vertex record.
 
-Topology audits still report open/nonmanifold edges and unusually long edges:
+The semantics of the appended stream may involve facial deformation, but no rig
+or morph animation is claimed. This change fixes its static geometry mapping.
 
-| Assembly | Boundary edges | Nonmanifold edges | Faces with an edge over 5× global median |
-| --- | ---: | ---: | ---: |
-| Cyclops | 2,910 | 40 | 21 |
-| Centaur | 5,441 | 187 | 253 |
-| Archdemon | 6,944 | 265 | 1,090 |
+## Winding, normals and assembly
 
-Seams, separate parts and large wing polygons can contribute to these metrics,
-but their causes have not all been resolved. No automatic welding, face deletion
-or cosmetic mesh repair was used to hide them. Visual recognizability does not
-establish watertightness, exact in-game appearance or complete geometry.
+The observed Xbox triangles use clockwise outward winding in the preserved
+coordinate system. OBJ exports reverse each triangle to counterclockwise order.
+The old exports' signed volume was negative; the corrected primary assemblies
+have positive volume and recognizable surfaces with backface culling enabled.
+Area-weighted vertex normals are generated from the corrected geometry and
+written as `vn` records; faces use `v/vt/vn` references. These are generated
+normals, not a claim to have decoded the packed source normal field. Separate
+serialized vertices are retained, including seam/hard-edge duplicates.
 
-Counts describe serialized records, including seam duplicates; they are not
-welded vertex counts. Centaur and Archdemon have additional unreferenced records.
-Their purpose may involve morphs, but that is not established. See the JSON
-audits for exact resource boundaries, batch counts and reference coverage, and
-`validated_archives.json` for archive hashes and every supported buffer's totals.
+Source coordinates remain Y up. OBJ texture V is flipped. The renderer uses a
+right-handed display-axis transform and actual front-face selection; it does
+not display both sides to conceal winding errors.
 
-Meshes with matching serialized variant names and mesh source are assembled;
-individual buffers are always exported too. Low-detail names are separated.
-Mixed-name buffers, including one Archdemon low-detail buffer, are preserved
-without automatic assembly. Alternate LC/DO armor and frozen meshes are not
-claimed to be complete standalone characters. A matching name is not proof of
-all possible runtime assembly rules.
+In Android, open a PAK and select **EXPORT CHARACTER GEOMETRY (OBJ ZIP)**:
+
+- `models/primary_model.obj`: the primary matching-name body/armor assembly.
+- `parts/`: separate buffers and material-name variants. These can be armor or
+  attachments only and are explicitly **not** presented as complete models.
+- `geometry_audit.txt` and `README.txt`: counts, boundaries and usage notes.
+
+Different mesh sources and mixed variant names are not automatically merged.
+Alternate-variant runtime composition remains unresolved. In particular, the
+DO material-name export shown as disconnected armor in the supplied screenshot
+was a parts export, not a decoded complete alternate character.
+
+v2.0 also sets Android versionCode 20 / versionName 2.0, updates the visible title,
+makes all controls/output accessible in a scrolling page, and captures the input
+byte array for geometry export so loading a second PAK cannot change that job's
+source halfway through.
+
+## Results and remaining limitations
+
+| Primary assembly | Records, all referenced | Triangles |
+| --- | ---: | ---: |
+| Cyclops | 5,088 | 6,974 |
+| Centaur | 6,735 | 6,832 |
+| Archdemon | 8,081 | 7,108 |
+
+Archdemon head/torso 95th-percentile edge length fell from about 189 to 12.4 source
+units. Its eye value fell from 191.8 to 2.3. Centaur head fell from 39.9 to 6.6,
+and eyes from 33.2 to 1.4. These changes follow the serialized vertex mapping;
+no triangle deletion or cosmetic repair was used to achieve them.
+
+Open edges, seam duplication and some nonmanifold edges remain. Raw-index audits
+report 40 nonmanifold edges for Cyclops, 2 for Centaur, and 59 for Archdemon.
+Their full causes are not established. Wing polygons also produce long edges.
+These are static geometry exports, not watertight printing meshes.
+
+Still unfinished:
+
+- Texture decoding/material binding. None of the three source PAKs contains a
+  literal embedded PNG or DDS signature; existing image-signature export cannot
+  supply their character textures. Native texture serialization is unresolved.
+- Source packed normals, skeletons, weights, animation and morph animation.
+- Complete alternate-variant assembly, smaller/static/frozen-buffer layouts,
+  and PS2 format support.
+- Android on-device validation of v2.0; desktop tests execute the exact Android
+  extraction class, but do not exercise the phone document provider or UI.
+
+This is a validated improvement to the three tested primary static models,
+**not completion of all game-asset extraction**.
 
 ## Reproduce
 
 ```sh
 python3 research/wrath_geometry.py /path/to/character.pak --out /tmp/character
-python3 research/render_geometry.py /tmp/character/assembled_file.obj --out /tmp/preview.png
+python3 research/render_geometry.py /tmp/character/primary_model.obj --out /tmp/preview.png
 python3 -m compileall -q research
 python3 -m unittest discover -s research/tests -v
 WRATH_PAK_DIR=/path/to/originals python3 -m unittest discover -s research/tests -v
 ```
 
-Rendering requires NumPy and Matplotlib. Extraction and tests use Python's
-standard library; tests also require Java 17 with the `jdk.compiler` module.
-The Java source targets Java 8 bytecode for Android compatibility.
+Rendering requires NumPy and Matplotlib. Extraction uses Python's standard
+library. Tests require Java 17 including `jdk.compiler` and compile the Android
+core to Java 8 bytecode. Seventeen tests pass with the original archives present.
+Checks cover relocated/unaligned buffers, both vertex ranges, bounds/truncation,
+strip stitching/parity, CCW winding, generated unit normals, export organization,
+OBJ rebasing and Python/Android ordered-face/vertex parity for all 13 buffers.
+CI uses synthetic fixtures; original archives are not committed.
 
 ```sh
 java com.sun.tools.javac.Main --release 8 -d /tmp/wrath-classes \
@@ -95,26 +134,7 @@ java com.sun.tools.javac.Main --release 8 -d /tmp/wrath-classes \
 java -cp /tmp/wrath-classes GeometryCli character.pak character.zip
 ```
 
-All 13 tests pass with the three original archives present. Checks cover
-relocated/unaligned buffers, nested containers, strip stitching/parity, malformed
-counts/truncation/nonfinite coordinates, out-of-range rejection, OBJ assembly
-rebasing, and Python/Android vertex and ordered-face parity for every discovered
-character buffer. CI runs the synthetic tests; source archives stay local.
-
-In Android, open a PAK and select **EXPORT CHARACTER GEOMETRY (OBJ ZIP)**. The ZIP
-contains `buffers/`, `assembled/` and `geometry_audit.txt`. An unsupported file
-produces an error rather than fake geometry. The existing audio/research exports
-remain available.
-
-## Still unresolved
-
-- Textures/material binding, packed normals, rig/skeleton, skin weights and animation.
-- Morph/expression records and unreferenced vertex records.
-- Complete alternate-variant assembly and small/static/frozen-buffer layouts.
-- PS2 format support and validation on additional Xbox characters.
-- On-device Android UI/runtime validation; desktop execution verifies the exact
-  extraction core, not Android document-provider behavior or phone memory limits.
-
-The older candidate scripts remain historical hypotheses. In particular,
-`centaur_triangle_list_correction.py` now parses again, but its all-list assumption
-is superseded by this nested-container decoder.
+Archive hashes and buffer totals are in `validated_archives.json`; current
+audits are under `previews/`. `characters.png` is the earlier v1.9 wireframe
+preview retained for comparison; use `v2_shaded.png` for current verification.
+Older candidate scripts remain historical hypotheses.

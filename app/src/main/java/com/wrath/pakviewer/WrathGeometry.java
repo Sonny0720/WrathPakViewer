@@ -51,7 +51,7 @@ public final class WrathGeometry {
         public final List<int[]> faces=new ArrayList<>();
     }
     public static final class Buffer {
-        public int offset,end,count; public String source,variant;
+        public int offset,end,count,baseCount; public String source,variant;
         public final List<Group> groups=new ArrayList<>();
     }
     public static final class Result {
@@ -62,12 +62,12 @@ public final class WrathGeometry {
         public String audit() {
             StringBuilder s=new StringBuilder("Xbox geometry only. Y up; UV V flipped for OBJ.\n"
                 +"Rig, textures, animation, PS2 layout and completeness are not validated.\n"
-                +"Variant assembly follows serialized names; individual buffers are preserved.\n");
+                +"Open models/primary_model.obj. parts/ variants may contain attachments only. Appended vertices are rebased; OBJ winding is CCW; normals are generated.\n");
             for(Buffer b:buffers) {
                 Set<Integer> used=new HashSet<>();int triangles=0;
                 for(Group g:b.groups)for(int[] t:g.faces){triangles++;for(int i:t)used.add(i);}
-                s.append(String.format(Locale.US,"buffer=0x%X vertices=%d referenced=%d triangles=%d source=%s variant=%s\n",
-                    b.offset,b.count,used.size(),triangles,b.source,b.variant));
+                s.append(String.format(Locale.US,"buffer=0x%X vertices=%d base=%d appended=%d referenced=%d triangles=%d source=%s variant=%s\n",
+                    b.offset,b.count,b.baseCount,b.count-b.baseCount,used.size(),triangles,b.source,b.variant));
                 for(Group g:b.groups)s.append(String.format(Locale.US,
                     "  name=%s offset=0x%X end=0x%X batches=%d list_indices=%d strip_indices=%d palette_entries=%d triangles=%d\n",
                     g.name,g.offset,g.end,g.batches,g.listIndices,g.stripIndices,g.paletteEntries,g.faces.size()));
@@ -87,11 +87,13 @@ public final class WrathGeometry {
                     int p=b.offset+8+32*i;
                     writer.write("vt "+Float.toString(f32(data,p+16))+" "+Double.toString(1.0-f32(data,p+20))+"\n");
                 }
+                double[][] normals=normals(b);
+                for(double[] normal:normals)writer.write("vn "+normal[0]+" "+normal[1]+" "+normal[2]+"\n");
                 for(Group g:b.groups) {
                     writer.write("g "+g.name.replaceAll("[^A-Za-z0-9_]","_")+"_"+Integer.toHexString(g.offset)+"\n");
                     for(int[] t:g.faces) {
                         writer.write("f");
-                        for(int v:t){int n=base+v+1;writer.write(" "+n+"/"+n);}
+                        for(int v:t){int n=base+v+1;writer.write(" "+n+"/"+n+"/"+n);}
                         writer.write("\n");
                     }
                 }
@@ -99,10 +101,23 @@ public final class WrathGeometry {
             }
             writer.flush();
         }
+        private double[][] normals(Buffer buffer) {
+            double[][] result=new double[buffer.count][3];
+            for(Group group:buffer.groups)for(int[] face:group.faces) {
+                double[][] v=new double[3][3];
+                for(int j=0;j<3;j++)for(int k=0;k<3;k++)v[j][k]=f32(data,buffer.offset+8+32*face[j]+4*k);
+                double ux=v[1][0]-v[0][0],uy=v[1][1]-v[0][1],uz=v[1][2]-v[0][2];
+                double vx=v[2][0]-v[0][0],vy=v[2][1]-v[0][1],vz=v[2][2]-v[0][2];
+                for(int index:face){result[index][0]+=uy*vz-uz*vy;result[index][1]+=uz*vx-ux*vz;result[index][2]+=ux*vy-uy*vx;}
+            }
+            for(double[] n:result){double length=Math.sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
+                if(length>0)for(int k=0;k<3;k++)n[k]/=length;else n[1]=1;}
+            return result;
+        }
         public void writeZip(ZipOutputStream zip) throws IOException {
             if(buffers.isEmpty())throw new IOException("No supported Xbox character geometry found");
             for(int i=0;i<buffers.size();i++) {
-                zip.putNextEntry(new ZipEntry(String.format(Locale.US,"buffers/buffer_%02d.obj",i)));
+                zip.putNextEntry(new ZipEntry(String.format(Locale.US,"parts/buffer_%02d.obj",i)));
                 writeObj(Collections.singletonList(buffers.get(i)),new OutputStreamWriter(zip,StandardCharsets.UTF_8));
                 zip.closeEntry();
             }
@@ -113,20 +128,28 @@ public final class WrathGeometry {
                 assemblies.computeIfAbsent(key,k->new ArrayList<>()).add(b);
             }
             for(Map.Entry<String,List<Buffer>> e:assemblies.entrySet()) {
-                zip.putNextEntry(new ZipEntry("assembled/"+e.getKey()+".obj"));
+                zip.putNextEntry(new ZipEntry("parts/variant_"+e.getKey()+".obj"));
                 writeObj(e.getValue(),new OutputStreamWriter(zip,StandardCharsets.UTF_8));zip.closeEntry();
             }
+            Buffer first=buffers.get(0);List<Buffer> primary=new ArrayList<>();
+            for(Buffer b:buffers)if(b==first||(first.variant!=null&&first.variant.equals(b.variant)&&first.source.equals(b.source)))primary.add(b);
+            zip.putNextEntry(new ZipEntry("models/primary_model.obj"));
+            writeObj(primary,new OutputStreamWriter(zip,StandardCharsets.UTF_8));zip.closeEntry();
+            zip.putNextEntry(new ZipEntry("README.txt"));
+            zip.write(("WrathPakViewer v2.0\nOpen models/primary_model.obj first.\n"
+                +"parts/ contains individual buffers and material variants; these may be incomplete armor or attachments.\n"
+                +"OBJ uses Y up, counterclockwise faces and generated vertex normals.\n"
+                +"Textures, rigs, animation and PS2 support remain unfinished. See geometry_audit.txt.\n").getBytes(StandardCharsets.UTF_8));zip.closeEntry();
             zip.putNextEntry(new ZipEntry("geometry_audit.txt"));
             zip.write(audit().getBytes(StandardCharsets.UTF_8));zip.closeEntry();
         }
     }
     private static void triangle(Group g,int a,int b,int c,int vertices) throws Invalid {
         if(a>=vertices||b>=vertices||c>=vertices)throw new Invalid("Index exceeds vertex buffer");
-        if(a!=b&&a!=c&&b!=c)g.faces.add(new int[]{a,b,c});
+        if(a!=b&&a!=c&&b!=c)g.faces.add(new int[]{a,c,b});
     }
     private static Group container(Reader r,int vertices) throws Invalid {
         Group g=new Group();int count=r.count(64);
-        if(count==0)throw new Invalid("Empty draw container");
         g.batches=count;
         for(int j=0;j<count;j++) {
             int[] list=r.indices();
@@ -144,18 +167,15 @@ public final class WrathGeometry {
         }
         return g;
     }
-    private static Group resource(byte[] data,int offset,int end,int vertices) throws Invalid {
+    private static Group resource(byte[] data,int offset,int end,int base,int vertices) throws Invalid {
         Reader r=new Reader(data,offset,end);
-        if(offset+8<=end&&u32(data,offset)==4&&u32(data,offset+4)==0)r.pos+=8;
-        Group g=container(r,vertices);
-        while(r.pos+8<=end&&u32(data,r.pos)==4&&u32(data,r.pos+4)>=1&&u32(data,r.pos+4)<=4) {
-            Reader next=new Reader(data,r.pos,end);Group extra;
-            extra=container(next,vertices);
-            g.faces.addAll(extra.faces);g.batches+=extra.batches;g.listIndices+=extra.listIndices;
-            g.stripIndices+=extra.stripIndices;g.paletteEntries+=extra.paletteEntries;r.pos=next.pos;
-        }
-        if(g.faces.isEmpty())throw new Invalid("Empty geometry");
-        g.end=r.pos;return g;
+        Group secondary=container(r,vertices-base),regular=container(r,base);
+        for(int[] face:secondary.faces)for(int i=0;i<3;i++)face[i]+=base;
+        secondary.faces.addAll(regular.faces);secondary.batches+=regular.batches;
+        secondary.listIndices+=regular.listIndices;secondary.stripIndices+=regular.stripIndices;
+        secondary.paletteEntries+=regular.paletteEntries;
+        if(secondary.faces.isEmpty())throw new Invalid("Empty geometry");
+        secondary.end=r.pos;return secondary;
     }
     private static String variant(String name) {
         Matcher m=VARIANT.matcher(name);
@@ -194,7 +214,7 @@ public final class WrathGeometry {
                 float value=f32(data,p+8+32*i+f);
                 if(Float.isNaN(value)||Float.isInfinite(value)||Math.abs(value)>=100000){valid=false;break;}
             }
-            if(valid){Buffer b=new Buffer();b.offset=p;b.end=e;b.count=(int)n;candidates.add(b);}
+            if(valid){Buffer b=new Buffer();b.offset=p;b.end=e;b.count=(int)n;b.baseCount=(int)u32(data,e+16);if(b.baseCount>0&&b.baseCount<=b.count)candidates.add(b);}
         }
         int previous=0;
         for(Buffer b:candidates) {
@@ -205,7 +225,7 @@ public final class WrathGeometry {
             for(Marker name:names) {
                 if(name.start<consumed||name.start>=b.offset)continue;
                 try {
-                    Group g=resource(data,name.end,b.offset,b.count);
+                    Group g=resource(data,name.end,b.offset,b.baseCount,b.count);
                     g.name=name.name;g.offset=name.start;b.groups.add(g);consumed=g.end;variants.add(variant(g.name));
                 } catch(Invalid invalid) {result.rejected.add(name.name+" @0x"+Integer.toHexString(name.start)+": "+invalid.getMessage());}
             }

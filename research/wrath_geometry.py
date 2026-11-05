@@ -54,22 +54,24 @@ def triangles(values, strip=False):
     else:
         source = (values[i:i+3] for i in range(0, len(values), 3))
     # Strip parity advances even across degenerate stitching indices.
-    return [tuple(t) for t in source if len(set(t)) == 3]
+    return [(t[0], t[2], t[1]) for t in source if len(set(t)) == 3]  # Xbox CW -> OBJ CCW
 
 
-def draw_container(reader):
+def draw_container(reader, vertex_limit=None):
     batches = reader.count(64)
-    if batches == 0:
-        raise FormatError('empty draw container')
     faces, evidence = [], []
     for _ in range(batches):
         start = reader.pos
         ids = reader.indices()
+        if vertex_limit is not None and any(i >= vertex_limit for i in ids):
+            raise FormatError('index exceeds vertex stream')
         faces.extend(triangles(ids))
         strips = reader.count(64)
         strip_counts = []
         for _ in range(strips):
             strip = reader.indices()
+            if vertex_limit is not None and any(i >= vertex_limit for i in strip):
+                raise FormatError('index exceeds vertex stream')
             faces.extend(triangles(strip, True))
             strip_counts.append(len(strip))
         palette = reader.indices()
@@ -81,20 +83,21 @@ def draw_container(reader):
     return faces, evidence
 
 
-def resource(data, offset, end):
+def resource(data, offset, end, base_count, vertex_count):
     reader = Reader(data, offset, end)
-    # Observed optional serialization prefix; it is not a topology enum.
-    if data[offset:offset+8] == struct.pack('<II', 4, 0):
-        reader.pos += 8
-    faces, batches = draw_container(reader)
-    while (reader.pos + 8 <= end and data[reader.pos:reader.pos+4] == struct.pack('<I', 4)
-           and 1 <= struct.unpack_from('<I', data, reader.pos+4)[0] <= 4):
-        continuation = Reader(data, reader.pos, end)
-        more_faces, more_batches = draw_container(continuation)
-        faces.extend(more_faces)
-        batches.extend(more_batches)
-        reader.pos = continuation.pos
-    return faces, batches, reader.pos
+    # Two serialized batch arrays: appended-vertex stream, then main stream.
+    secondary, secondary_batches = draw_container(reader, vertex_count-base_count)
+    regular, regular_batches = draw_container(reader, base_count)
+    if any(i >= vertex_count-base_count for t in secondary for i in t):
+        raise FormatError('secondary index exceeds appended vertex stream')
+    if any(i >= base_count for t in regular for i in t):
+        raise FormatError('main index exceeds base vertex stream')
+    faces = [tuple(i+base_count for i in t) for t in secondary] + regular
+    for batch in secondary_batches:
+        batch['vertex_stream'] = 'appended'
+    for batch in regular_batches:
+        batch['vertex_stream'] = 'main'
+    return faces, secondary_batches+regular_batches, reader.pos
 
 
 def vertex_buffers(data):
@@ -113,7 +116,9 @@ def vertex_buffers(data):
                                for i in range(count)]
                     if all(math.isfinite(x) and abs(x) < 100000
                            for row in records for x in (*row[:3], *row[4:6])):
-                        found.append(dict(offset=pos, end=end, records=records))
+                        base_count = struct.unpack_from('<I', data, end+16)[0]
+                        if 0 < base_count <= count:
+                            found.append(dict(offset=pos, end=end, base_count=base_count, records=records))
             pos += 1
     return sorted(found, key=lambda item: item['offset'])
 
@@ -148,7 +153,7 @@ def decode(data):
             if not label.startswith('C_'):
                 continue
             try:
-                faces, batches, end = resource(data, name.end(), vb['offset'])
+                faces, batches, end = resource(data, name.end(), vb['offset'], vb['base_count'], len(vb['records']))
                 if not faces or any(max(t) >= len(vb['records']) for t in faces):
                     raise FormatError('empty geometry or index exceeds vertex buffer')
                 groups.append(dict(name=label, offset=name.start(), end=end,
@@ -163,6 +168,27 @@ def decode(data):
     return result, rejected
 
 
+def vertex_normals(buffer):
+    normals = [[0.0, 0.0, 0.0] for _ in buffer['records']]
+    for group in buffer['groups']:
+        for face in group['faces']:
+            a, b, c = [buffer['records'][i][:3] for i in face]
+            u = [b[k]-a[k] for k in range(3)]
+            v = [c[k]-a[k] for k in range(3)]
+            normal = (u[1]*v[2]-u[2]*v[1], u[2]*v[0]-u[0]*v[2], u[0]*v[1]-u[1]*v[0])
+            for i in face:
+                for k in range(3):
+                    normals[i][k] += normal[k]
+    for row in normals:
+        length = math.sqrt(sum(x*x for x in row))
+        if length:
+            for k in range(3):
+                row[k] /= length
+        else:
+            row[:] = [0.0, 1.0, 0.0]
+    return normals
+
+
 def write_obj(buffers, path):
     base = 0
     with path.open('w', encoding='utf-8') as out:
@@ -172,11 +198,13 @@ def write_obj(buffers, path):
                 out.write('v %.9g %.9g %.9g\n' % tuple(row[:3]))
             for row in buffer['records']:
                 out.write('vt %.9g %.9g\n' % (row[4], 1-row[5]))
+            for normal in vertex_normals(buffer):
+                out.write('vn %.9g %.9g %.9g\n' % tuple(normal))
             for group in buffer['groups']:
                 out.write('g ' + re.sub(r'[^A-Za-z0-9_]', '_', group['name'])
                           + '_' + format(group['offset'], 'x') + '\n')
                 for face in group['faces']:
-                    out.write('f ' + ' '.join(f'{i+base+1}/{i+base+1}' for i in face) + '\n')
+                    out.write('f ' + ' '.join(f'{i+base+1}/{i+base+1}/{i+base+1}' for i in face) + '\n')
             base += len(buffer['records'])
 
 
@@ -188,7 +216,7 @@ def extract(path, output):
     output.mkdir(parents=True, exist_ok=True)
     exports = []
     for number, buffer in enumerate(buffers):
-        name = f'buffer_{number:02d}.obj'
+        name = f'part_buffer_{number:02d}.obj'
         write_obj([buffer], output/name)
         exports.append(name)
     variants = sorted({b['variant'] for b in buffers if b['variant']})
@@ -197,15 +225,18 @@ def extract(path, output):
         # Multiple mesh sources are never combined, even if material names match.
         for source in sorted({b['source'] for b in selected}):
             same = [b for b in selected if b['source'] == source]
-            name = re.sub(r'[^A-Za-z0-9_]', '_', key + '_' + source.rsplit('\\', 1)[-1]) + '.obj'
+            name = 'parts_' + re.sub(r'[^A-Za-z0-9_]', '_', key + '_' + source.rsplit('\\', 1)[-1]) + '.obj'
             write_obj(same, output/name)
             exports.append(name)
+    primary = [b for b in buffers if b['variant'] == buffers[0]['variant'] and b['source'] == buffers[0]['source']] if buffers[0]['variant'] else [buffers[0]]
+    write_obj(primary, output/'primary_model.obj')
+    exports.insert(0, 'primary_model.obj')
     report = dict(archive=path.name, sha256=hashlib.sha256(data).hexdigest(),
                   status='recognizability requires visual inspection; completeness unproven',
                   exports=exports, rejected=rejected, buffers=[])
     for buffer in buffers:
         used = {i for g in buffer['groups'] for t in g['faces'] for i in t}
-        report['buffers'].append(dict(offset=buffer['offset'], vertices=len(buffer['records']),
+        report['buffers'].append(dict(offset=buffer['offset'], vertices=len(buffer['records']), base_vertices=buffer['base_count'],
             referenced_vertices=len(used), source=buffer['source'], variant=buffer['variant'],
             groups=[{k: v for k, v in g.items() if k != 'faces'} | dict(triangles=len(g['faces']))
                     for g in buffer['groups']]))

@@ -3,17 +3,19 @@
   "sha256": "eff8491ea234062612597b573f9b34982d5416a424fc001a9242b8024adbe448",
   "status": "recognizability requires visual inspection; completeness unproven",
   "exports": [
-    "buffer_00.obj",
-    "buffer_01.obj",
-    "buffer_02.obj",
-    "C_Cyclops_C_DC_Cyclops_low_c_cyclops_msh.obj",
-    "C_Cyclops_C_DC_Cyclops_main_c_cyclops_msh.obj"
+    "primary_model.obj",
+    "part_buffer_00.obj",
+    "part_buffer_01.obj",
+    "part_buffer_02.obj",
+    "parts_C_Cyclops_C_DC_Cyclops_low_c_cyclops_msh.obj",
+    "parts_C_Cyclops_C_DC_Cyclops_main_c_cyclops_msh.obj"
   ],
   "rejected": [],
   "buffers": [
     {
       "offset": 45680,
       "vertices": 2158,
+      "base_vertices": 2158,
       "referenced_vertices": 2158,
       "source": "meshes\\chars\\c_cyclops.msh",
       "variant": "C_Cyclops_C_DC_Cyclops_main",
@@ -29,7 +31,8 @@
               "strip_indices": [
                 1460
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 38314,
@@ -37,7 +40,8 @@
               "strip_indices": [
                 689
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 40268,
@@ -45,7 +49,8 @@
               "strip_indices": [
                 684
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 42620,
@@ -53,7 +58,8 @@
               "strip_indices": [
                 266
               ],
-              "palette_entries": 17
+              "palette_entries": 17,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 2434
@@ -69,13 +75,15 @@
               "strip_indices": [
                 114
               ],
-              "palette_entries": 20
+              "palette_entries": 20,
+              "vertex_stream": "main"
             },
             {
               "offset": 45289,
               "list_indices": 54,
               "strip_indices": [],
-              "palette_entries": 4
+              "palette_entries": 4,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 282
@@ -91,7 +99,8 @@
               "strip_indices": [
                 16
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 8
@@ -101,6 +110,7 @@
     {
       "offset": 142775,
       "vertices": 2930,
+      "base_vertices": 2930,
       "referenced_vertices": 2930,
       "source": "meshes\\chars\\c_cyclops.msh",
       "variant": "C_Cyclops_C_DC_Cyclops_main",
@@ -116,7 +126,8 @@
               "strip_indices": [
                 1491
               ],
-              "palette_entries": 6
+              "palette_entries": 6,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1159
@@ -132,7 +143,8 @@
               "strip_indices": [
                 1074
               ],
-              "palette_entries": 13
+              "palette_entries": 13,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 859
@@ -148,7 +160,8 @@
               "strip_indices": [
                 400
               ],
-              "palette_entries": 8
+              "palette_entries": 8,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 370
@@ -164,7 +177,8 @@
               "strip_indices": [
                 763
               ],
-              "palette_entries": 20
+              "palette_entries": 20,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 596
@@ -180,7 +194,8 @@
               "strip_indices": [
                 1226
               ],
-              "palette_entries": 9
+              "palette_entries": 9,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 910
@@ -194,7 +209,8 @@
               "offset": 140672,
               "list_indices": 36,
               "strip_indices": [],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 12
@@ -210,7 +226,8 @@
               "strip_indices": [
                 27
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 22
@@ -226,7 +243,8 @@
               "strip_indices": [
                 277
               ],
-              "palette_entries": 18
+              "palette_entries": 18,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 234
@@ -242,7 +260,8 @@
               "strip_indices": [
                 111
               ],
-              "palette_entries": 5
+              "palette_entries": 5,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 88
@@ -252,6 +271,7 @@
     {
       "offset": 255775,
       "vertices": 1190,
+      "base_vertices": 1190,
       "referenced_vertices": 1190,
       "source": "meshes\\chars\\c_cyclops.msh",
       "variant": "C_Cyclops_C_DC_Cyclops_low",
@@ -267,7 +287,8 @@
               "strip_indices": [
                 673
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 253781,
@@ -275,7 +296,8 @@
               "strip_indices": [
                 352
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 255067,
@@ -283,7 +305,8 @@
               "strip_indices": [
                 171
               ],
-              "palette_entries": 13
+              "palette_entries": 13,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1075
@@ -292,13 +315,15 @@
     }
   ],
   "visual_verification": {
-    "scope": "primary main assembly from first two character buffers",
+    "version": "2.0",
+    "scope": "primary main assembly",
     "views": [
-      "front",
-      "side",
-      "perspective"
+      "shaded front",
+      "shaded side",
+      "shaded perspective"
     ],
-    "result": "recognizable character geometry; completeness not established",
-    "preview": "characters.png"
+    "backface_culling": true,
+    "preview": "v2_shaded.png",
+    "result": "recognizable static geometry; full asset extraction unfinished"
   }
 }

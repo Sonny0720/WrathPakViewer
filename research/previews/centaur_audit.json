@@ -3,22 +3,24 @@
   "sha256": "6b496bc9a0fdf15df366672d2807be6c527548b63113127be4fbdc005c45d2fe",
   "status": "recognizability requires visual inspection; completeness unproven",
   "exports": [
-    "buffer_00.obj",
-    "buffer_01.obj",
-    "buffer_02.obj",
-    "buffer_03.obj",
-    "buffer_04.obj",
-    "C_Centaur_C_LC_Centaur_low_c_centaur_msh.obj",
-    "C_Centaur_C_LC_Centaur_main_c_centaur_msh.obj",
-    "C_Centaur_C_LO_Centaur_low_c_centaur_msh.obj",
-    "C_Centaur_C_LO_Centaur_main_c_centaur_msh.obj"
+    "primary_model.obj",
+    "part_buffer_00.obj",
+    "part_buffer_01.obj",
+    "part_buffer_02.obj",
+    "part_buffer_03.obj",
+    "part_buffer_04.obj",
+    "parts_C_Centaur_C_LC_Centaur_low_c_centaur_msh.obj",
+    "parts_C_Centaur_C_LC_Centaur_main_c_centaur_msh.obj",
+    "parts_C_Centaur_C_LO_Centaur_low_c_centaur_msh.obj",
+    "parts_C_Centaur_C_LO_Centaur_main_c_centaur_msh.obj"
   ],
   "rejected": [],
   "buffers": [
     {
       "offset": 145292,
       "vertices": 5268,
-      "referenced_vertices": 4654,
+      "base_vertices": 4654,
+      "referenced_vertices": 5268,
       "source": "meshes\\chars\\c_centaur.msh",
       "variant": "C_Centaur_C_LO_Centaur_main",
       "groups": [
@@ -33,7 +35,8 @@
               "strip_indices": [
                 787
               ],
-              "palette_entries": 3
+              "palette_entries": 3,
+              "vertex_stream": "appended"
             },
             {
               "offset": 96344,
@@ -41,7 +44,8 @@
               "strip_indices": [
                 781
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 99538,
@@ -49,7 +53,8 @@
               "strip_indices": [
                 597
               ],
-              "palette_entries": 17
+              "palette_entries": 17,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1811
@@ -65,7 +70,8 @@
               "strip_indices": [
                 27
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "appended"
             },
             {
               "offset": 102142,
@@ -73,7 +79,8 @@
               "strip_indices": [
                 773
               ],
-              "palette_entries": 8
+              "palette_entries": 8,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 728
@@ -89,7 +96,8 @@
               "strip_indices": [
                 1680
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 112091,
@@ -97,7 +105,8 @@
               "strip_indices": [
                 450
               ],
-              "palette_entries": 15
+              "palette_entries": 15,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1880
@@ -113,7 +122,8 @@
               "strip_indices": [
                 223
               ],
-              "palette_entries": 2
+              "palette_entries": 2,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 160
@@ -129,7 +139,8 @@
               "strip_indices": [
                 373
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 270
@@ -137,7 +148,7 @@
         {
           "name": "C_Centaur:C_LO_Centaur_Eye_V1",
           "offset": 116139,
-          "end": 116400,
+          "end": 116408,
           "batches": [
             {
               "offset": 116176,
@@ -145,7 +156,8 @@
               "strip_indices": [
                 63
               ],
-              "palette_entries": 1
+              "palette_entries": 1,
+              "vertex_stream": "appended"
             }
           ],
           "triangles": 48
@@ -161,7 +173,8 @@
               "strip_indices": [
                 171
               ],
-              "palette_entries": 3
+              "palette_entries": 3,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 160
@@ -177,7 +190,8 @@
               "strip_indices": [
                 106
               ],
-              "palette_entries": 10
+              "palette_entries": 10,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 82
@@ -193,7 +207,8 @@
               "strip_indices": [
                 55
               ],
-              "palette_entries": 7
+              "palette_entries": 7,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 34
@@ -209,7 +224,8 @@
               "strip_indices": [
                 53
               ],
-              "palette_entries": 7
+              "palette_entries": 7,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 38
@@ -225,7 +241,8 @@
               "strip_indices": [
                 43
               ],
-              "palette_entries": 7
+              "palette_entries": 7,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 34
@@ -241,7 +258,8 @@
               "strip_indices": [
                 107
               ],
-              "palette_entries": 10
+              "palette_entries": 10,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 82
@@ -251,6 +269,7 @@
     {
       "offset": 347452,
       "vertices": 1467,
+      "base_vertices": 1467,
       "referenced_vertices": 1467,
       "source": "meshes\\chars\\c_centaur.msh",
       "variant": "C_Centaur_C_LO_Centaur_main",
@@ -266,7 +285,8 @@
               "strip_indices": [
                 137
               ],
-              "palette_entries": 6
+              "palette_entries": 6,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 96
@@ -282,7 +302,8 @@
               "strip_indices": [
                 1423
               ],
-              "palette_entries": 12
+              "palette_entries": 12,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1209
@@ -298,7 +319,8 @@
               "strip_indices": [
                 301
               ],
-              "palette_entries": 3
+              "palette_entries": 3,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 200
@@ -308,6 +330,7 @@
     {
       "offset": 407277,
       "vertices": 1609,
+      "base_vertices": 1609,
       "referenced_vertices": 1609,
       "source": "meshes\\chars\\c_centaur.msh",
       "variant": "C_Centaur_C_LC_Centaur_main",
@@ -323,7 +346,8 @@
               "strip_indices": [
                 35
               ],
-              "palette_entries": 4
+              "palette_entries": 4,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 38
@@ -339,7 +363,8 @@
               "strip_indices": [
                 861
               ],
-              "palette_entries": 10
+              "palette_entries": 10,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 1021
@@ -355,7 +380,8 @@
               "strip_indices": [
                 260
               ],
-              "palette_entries": 5
+              "palette_entries": 5,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 163
@@ -371,7 +397,8 @@
               "strip_indices": [
                 48
               ],
-              "palette_entries": 3
+              "palette_entries": 3,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 32
@@ -381,6 +408,7 @@
     {
       "offset": 470545,
       "vertices": 973,
+      "base_vertices": 973,
       "referenced_vertices": 973,
       "source": "meshes\\chars\\c_centaur.msh",
       "variant": "C_Centaur_C_LO_Centaur_low",
@@ -396,7 +424,8 @@
               "strip_indices": [
                 467
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 467623,
@@ -404,7 +433,8 @@
               "strip_indices": [
                 182
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 468365,
@@ -412,7 +442,8 @@
               "strip_indices": [
                 117
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 468863,
@@ -420,7 +451,8 @@
               "strip_indices": [
                 27
               ],
-              "palette_entries": 4
+              "palette_entries": 4,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 676
@@ -436,7 +468,8 @@
               "strip_indices": [
                 235
               ],
-              "palette_entries": 14
+              "palette_entries": 14,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 268
@@ -446,6 +479,7 @@
     {
       "offset": 511468,
       "vertices": 1240,
+      "base_vertices": 1240,
       "referenced_vertices": 1240,
       "source": "meshes\\chars\\c_centaur.msh",
       "variant": "C_Centaur_C_LC_Centaur_low",
@@ -461,7 +495,8 @@
               "strip_indices": [
                 405
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 507766,
@@ -469,7 +504,8 @@
               "strip_indices": [
                 206
               ],
-              "palette_entries": 21
+              "palette_entries": 21,
+              "vertex_stream": "main"
             },
             {
               "offset": 508676,
@@ -477,7 +513,8 @@
               "strip_indices": [
                 62
               ],
-              "palette_entries": 6
+              "palette_entries": 6,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 596
@@ -493,7 +530,8 @@
               "strip_indices": [
                 89
               ],
-              "palette_entries": 10
+              "palette_entries": 10,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 231
@@ -509,7 +547,8 @@
               "strip_indices": [
                 106
               ],
-              "palette_entries": 8
+              "palette_entries": 8,
+              "vertex_stream": "main"
             }
           ],
           "triangles": 175
@@ -518,13 +557,15 @@
     }
   ],
   "visual_verification": {
-    "scope": "primary main assembly from first two character buffers",
+    "version": "2.0",
+    "scope": "primary main assembly",
     "views": [
-      "front",
-      "side",
-      "perspective"
+      "shaded front",
+      "shaded side",
+      "shaded perspective"
     ],
-    "result": "recognizable character geometry; completeness not established",
-    "preview": "characters.png"
+    "backface_culling": true,
+    "preview": "v2_shaded.png",
+    "result": "recognizable static geometry; full asset extraction unfinished"
   }
 }

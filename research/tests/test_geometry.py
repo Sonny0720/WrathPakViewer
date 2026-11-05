@@ -1,6 +1,7 @@
 """Topology, bounds, relocation, cross-runtime and optional original-archive checks."""
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import struct
@@ -12,7 +13,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'research'))
-from wrath_geometry import Reader, FormatError, decode, draw_container, triangles, write_obj
+from wrath_geometry import Reader, FormatError, decode, draw_container, triangles, write_obj, vertex_normals, resource
 
 
 def uints(*values):
@@ -31,14 +32,15 @@ def fixture(padding=0, corrupt=False, continuation=False, mesh='chars'):
     blob = bytearray(uints(0x52049)+bytes(24)+bytes(padding))
     blob += f'meshes\\{mesh}\\c_test.msh'.encode()+b'\0'
     name = b'C_Test:C_DC_Test_Body_V1'
-    blob += uints(len(name))+name+uints(4, 0)
-    blob += container((0, 1, 101) if corrupt else (0, 1, 2))
+    blob += uints(len(name))+name
     if continuation:
-        blob += container((7, 8, 9), (7, 8, 9))
+        blob += container()+container((7, 8, 9), (7, 8, 9))
+    else:
+        blob += uints(4, 0)+container((0, 1, 101) if corrupt else (0, 1, 2))
     blob += bytes(16)+uints(128, 101)
     for i in range(101):
         blob += struct.pack('<3fI2fII', i % 10, i // 10, i % 3, 0, .25, .75, 0, 0)
-    blob += bytes(16)+uints(101, 101)
+    blob += bytes(16)+uints(91 if continuation else 101, 101)
     return bytes(blob)
 
 
@@ -63,8 +65,28 @@ class GeometryTests(unittest.TestCase):
             str(base/'test.pak'), str(base/'test.zip')], capture_output=True, text=True)
         return result, base/'test.zip'
 
+    def test_secondary_indices_are_checked_against_their_own_stream(self):
+        value = container((0, 1, 10))+uints(4, 0)
+        with self.assertRaises(FormatError):
+            resource(value, 0, len(value), 91, 101)
+
+    def test_main_indices_cannot_reference_appended_vertices(self):
+        value = uints(4, 0)+container((0, 1, 91))
+        with self.assertRaises(FormatError):
+            resource(value, 0, len(value), 91, 101)
+
+    def test_invalid_degenerate_indices_are_not_silently_discarded(self):
+        value = uints(4, 0)+container((999, 999, 999))
+        with self.assertRaises(FormatError):
+            resource(value, 0, len(value), 101, 101)
+
+    def test_normals_follow_exported_ccw_geometry(self):
+        buffer = dict(records=[(0., 0., 0.), (1., 0., 0.), (0., 1., 0.)],
+                      groups=[dict(faces=[(0, 1, 2)])])
+        self.assertEqual(vertex_normals(buffer), [[0., 0., 1.]]*3)
+
     def test_strip_parity_survives_degenerate_stitches(self):
-        self.assertEqual(triangles((0, 1, 2, 2, 3, 4), True), [(0, 1, 2), (3, 2, 4)])
+        self.assertEqual(triangles((0, 1, 2, 2, 3, 4), True), [(0, 2, 1), (3, 4, 2)])
 
     def test_list_rejects_remainder_instead_of_dropping_indices(self):
         with self.assertRaises(FormatError):
@@ -88,12 +110,14 @@ class GeometryTests(unittest.TestCase):
             buffers, rejected = decode(fixture(padding))
             self.assertEqual(len(buffers), 1)
             self.assertEqual(rejected, [])
-            self.assertEqual(buffers[0]['groups'][0]['faces'], [(0, 1, 2), (3, 2, 4), (4, 5, 6)])
+            self.assertEqual(buffers[0]['groups'][0]['faces'], [(0, 2, 1), (3, 4, 2), (4, 6, 5)])
 
     def test_containers_are_all_retained(self):
         buffers, _ = decode(fixture(continuation=True))
         self.assertEqual(len(buffers[0]['groups'][0]['batches']), 2)
         self.assertEqual(len(buffers[0]['groups'][0]['faces']), 5)
+        self.assertEqual(buffers[0]['groups'][0]['faces'][0], (91, 93, 92))
+        self.assertEqual(buffers[0]['groups'][0]['faces'][-1], (7, 9, 8))
 
     def test_bad_index_rejects_resource(self):
         buffers, rejected = decode(fixture(corrupt=True))
@@ -121,16 +145,22 @@ class GeometryTests(unittest.TestCase):
         result, path = self.android(blob)
         self.assertEqual(result.returncode, 0, result.stderr)
         with zipfile.ZipFile(path) as archive:
-            obj = archive.read('buffers/buffer_00.obj').decode()
+            obj = archive.read('parts/buffer_00.obj').decode()
             faces = [tuple(int(v.split('/')[0])-1 for v in line.split()[1:])
                      for line in obj.splitlines() if line.startswith('f ')]
             self.assertEqual(faces, buffers[0]['groups'][0]['faces'])
             self.assertIn('vt 0.25 0.25', obj)
+            self.assertEqual(sum(line.startswith('vn ') for line in obj.splitlines()), 101)
+            self.assertIn('models/primary_model.obj', archive.namelist())
+            normals = [tuple(map(float, line.split()[1:])) for line in obj.splitlines() if line.startswith('vn ')]
+            for n in normals:
+                self.assertTrue(all(math.isfinite(x) for x in n))
+                self.assertAlmostEqual(sum(x*x for x in n), 1., places=5)
         path = Path(self.temp.name)/'merged.obj'
         write_obj(buffers*2, path)
         faces = [tuple(int(v.split('/')[0]) for v in line.split()[1:])
                  for line in path.read_text().splitlines() if line.startswith('f ')]
-        self.assertEqual(faces[5], (102, 103, 104))
+        self.assertEqual(faces[5], (193, 195, 194))
 
     @unittest.skipUnless(os.environ.get('WRATH_PAK_DIR'), 'Original archives not included in repository')
     def test_original_archives_and_android_parity(self):
@@ -141,13 +171,16 @@ class GeometryTests(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(blob).hexdigest(), entry['sha256'])
                 buffers, rejected = decode(blob)
                 self.assertEqual(rejected, [])
+                for buffer in buffers:
+                    used = {i for group in buffer['groups'] for face in group['faces'] for i in face}
+                    self.assertEqual(len(used), len(buffer['records']))
                 metrics = [[len(b['records']), sum(len(g['faces']) for g in b['groups'])] for b in buffers]
                 self.assertEqual(metrics, entry['buffers_vertices_triangles'])
                 result, path = self.android(blob)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 with zipfile.ZipFile(path) as archive:
                     for i, buffer in enumerate(buffers):
-                        text = archive.read(f'buffers/buffer_{i:02d}.obj').decode()
+                        text = archive.read(f'parts/buffer_{i:02d}.obj').decode()
                         faces = [tuple(int(v.split('/')[0])-1 for v in line.split()[1:])
                                  for line in text.splitlines() if line.startswith('f ')]
                         self.assertEqual(faces, [t for g in buffer['groups'] for t in g['faces']])
