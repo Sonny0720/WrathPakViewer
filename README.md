@@ -21,3 +21,17 @@ samples yielded 312 joints and 203 animation records, including interface clips.
 Skin weights and playable keyframes remain under research.
 
 See [texture findings](research/TEXTURES.md) and [geometry research](research/GEOMETRY.md).
+
+## Windows desktop app
+
+Download the **WrathPakViewer-Windows-x64** artifact from a successful build in the Actions tab. Extract the portable ZIP and run `WrathPakViewer.exe` inside the extracted folder. The folder includes the Java runtime.
+
+Use **Open PAK File** and select an Xbox Wrath Unleashed archive. Choose an export button and a destination ZIP. For models, extract the ZIP and open `models/primary_model.obj` with its MTL and textures in place. The Windows app shares the Android decoders and supports the same formats and archive layouts.
+
+The build also produces a command-line JAR for Java 17 or later:
+
+```powershell
+java -jar WrathPakViewer.jar input.pak models output.zip
+```
+
+Categories are `all`, `models`, `textures`, `rigs`, `animation`, and `audio`.
