@@ -61,7 +61,7 @@ public final class WrathGeometry {
         private Result(byte[] b) { data=b; }
         public String audit() {
             StringBuilder s=new StringBuilder("Xbox geometry only. Y up; UV V flipped for OBJ.\n"
-                +"Rig, textures, animation, PS2 layout and completeness are not validated.\n"
+                +"Rig, animation, source shader behavior, PS2 layout and completeness are not validated. The category exporter adds native textures and MTL files.\n"
                 +"Open models/primary_model.obj. parts/ variants may contain attachments only. Appended vertices are rebased; OBJ winding is CCW; normals are generated.\n");
             for(Buffer b:buffers) {
                 Set<Integer> used=new HashSet<>();int triangles=0;
@@ -77,7 +77,7 @@ public final class WrathGeometry {
         }
         public void writeObj(List<Buffer> selection,Writer writer) throws IOException {
             int base=0;
-            writer.write("# Xbox geometry; Y up. Rig/materials not recovered.\n");
+            writer.write("# Xbox geometry; Y up.\nmtllib materials.mtl\n");
             for(Buffer b:selection) {
                 for(int i=0;i<b.count;i++) {
                     int p=b.offset+8+32*i;
@@ -91,6 +91,7 @@ public final class WrathGeometry {
                 for(double[] normal:normals)writer.write("vn "+normal[0]+" "+normal[1]+" "+normal[2]+"\n");
                 for(Group g:b.groups) {
                     writer.write("g "+g.name.replaceAll("[^A-Za-z0-9_]","_")+"_"+Integer.toHexString(g.offset)+"\n");
+                    writer.write("usemtl "+g.name.substring(g.name.indexOf(':')+1).toLowerCase(Locale.ROOT).replaceAll("[^A-Za-z0-9_-]","_")+"\n");
                     for(int[] t:g.faces) {
                         writer.write("f");
                         for(int v:t){int n=base+v+1;writer.write(" "+n+"/"+n+"/"+n);}
@@ -136,10 +137,10 @@ public final class WrathGeometry {
             zip.putNextEntry(new ZipEntry("models/primary_model.obj"));
             writeObj(primary,new OutputStreamWriter(zip,StandardCharsets.UTF_8));zip.closeEntry();
             zip.putNextEntry(new ZipEntry("README.txt"));
-            zip.write(("WrathPakViewer v2.0\nOpen models/primary_model.obj first.\n"
+            zip.write(("WrathPakViewer v2.1\nOpen models/primary_model.obj first.\n"
                 +"parts/ contains individual buffers and material variants; these may be incomplete armor or attachments.\n"
                 +"OBJ uses Y up, counterclockwise faces and generated vertex normals.\n"
-                +"Textures, rigs, animation and PS2 support remain unfinished. See geometry_audit.txt.\n").getBytes(StandardCharsets.UTF_8));zip.closeEntry();
+                +"Models export includes PNG textures and MTL bindings. Source shader behavior, rigs, animation and PS2 support remain unfinished. See geometry_audit.txt.\n").getBytes(StandardCharsets.UTF_8));zip.closeEntry();
             zip.putNextEntry(new ZipEntry("geometry_audit.txt"));
             zip.write(audit().getBytes(StandardCharsets.UTF_8));zip.closeEntry();
         }

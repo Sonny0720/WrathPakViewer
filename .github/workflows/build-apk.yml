@@ -24,7 +24,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Verify research scripts and geometry decoder
+      - name: Install texture verification dependency
+        run: python3 -m pip install Pillow
+
+      - name: Verify geometry, texture and export decoders
         run: |
           python3 -m compileall -q research
           python3 -m unittest discover -s research/tests -v

@@ -1,4 +1,8 @@
-# WrathPakViewer v2.0 — Xbox character geometry
+# Xbox character geometry (v2.0 mapping, v2.1 textured export)
+
+Native texture decoding and exact-name MTL binding were added in v2.1. See
+[TEXTURES.md](TEXTURES.md) for the current app/export behavior and textured previews.
+The mapping findings below remain valid; the v2.0 ZIP layout is historical.
 
 v2.0 fixes two actual export defects demonstrated by the shaded Android
 screenshots: wrong vertex ranges for faces/eyes, and inside-out OBJ winding.
@@ -98,9 +102,9 @@ These are static geometry exports, not watertight printing meshes.
 
 Still unfinished:
 
-- Texture decoding/material binding. None of the three source PAKs contains a
-  literal embedded PNG or DDS signature; existing image-signature export cannot
-  supply their character textures. Native texture serialization is unresolved.
+- Source shader behavior and complete alternate material binding. v2.1 now
+  decodes native BC1/BC3 MTX records despite the absence of PNG/DDS signatures;
+  see TEXTURES.md.
 - Source packed normals, skeletons, weights, animation and morph animation.
 - Complete alternate-variant assembly, smaller/static/frozen-buffer layouts,
   and PS2 format support.
