@@ -110,9 +110,11 @@ public class MainActivity extends Activity {
   // This indexes names, NOT payload offsets or decoded resource types.
   private void parseIndexedNames(){
     if(data.length<32||u32(0)!=335945)return;
-    long count=u32(24), namesEnd=u32(8);
+    long count=u32(24), namesLength=u32(8);
     if(count<1||count>100000||28L+4L*count>=data.length||namesEnd>data.length)return;
     long base=28L+4L*count;
+    long namesEnd=base+namesLength;
+    if(namesEnd>data.length)return;
     long prev=-1;
     for(int i=0;i<count;i++){
       long relative=u32(28+i*4), start=base+relative;
@@ -238,10 +240,11 @@ public class MainActivity extends Activity {
   // Describes confirmed header/name-table boundaries without assuming mesh layouts.
   private String structureReport(){
     if(data==null||data.length<28)return "PAK too small for header\n";
-    long declared=u32(4), namesEnd=u32(8), count=u32(24);
+    long declared=u32(4), namesLength=u32(8), count=u32(24);
     long tableStart=28, tableEnd=tableStart+count*4L;
+    long namesEnd=tableEnd+namesLength;
     StringBuilder sb=new StringBuilder();
-    sb.append(String.format(Locale.US,"PAK structure (observations, not a decoded asset directory)\nMagic: 0x%08X\nActual length: %d\nHeader length field: %d (%s)\nName pointer table: 0x%08X..0x%08X\nName count: %d\nName bytes end field: 0x%08X\nIndexed names validated: %d\n",u32(0),data.length,declared,declared==data.length?"matches":"DIFFERS",tableStart,tableEnd,count,namesEnd,indexedNames.size()));
+    sb.append(String.format(Locale.US,"PAK structure (observations, not a decoded asset directory)\nMagic: 0x%08X\nActual length: %d\nHeader length field: %d (%s)\nName pointer table: 0x%08X..0x%08X\nName count: %d\nName bytes end (computed): 0x%08X\nIndexed names validated: %d\n",u32(0),data.length,declared,declared==data.length?"matches":"DIFFERS",tableStart,tableEnd,count,namesEnd,indexedNames.size()));
     sb.append("\nThese offsets identify the NAME INDEX, not model/texture/animation payloads.\n");
     if(tableEnd>data.length||namesEnd>data.length||tableEnd>namesEnd)sb.append("WARNING: name table boundaries inconsistent\n");
     sb.append("\nHeader words (little-endian):\n");
