@@ -70,13 +70,13 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force out/classes, out/input
           $shared = 'app/src/main/java/com/wrath/pakviewer'
-          javac -encoding UTF-8 --release 17 -d out/classes "$shared/WrathGeometry.java" "$shared/WrathTextures.java" "$shared/WrathMotion.java" "$shared/WrathExports.java" desktop/src/main/java/com/wrath/pakviewer/DesktopApp.java
+          javac -encoding UTF-8 --release 17 -d out/classes "$shared/WrathGeometry.java" "$shared/WrathTextures.java" "$shared/WrathMotion.java" "$shared/WrathExports.java" "$shared/WrathRepack.java" desktop/src/main/java/com/wrath/pakviewer/DesktopApp.java
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           jar --create --file out/input/WrathPakViewer.jar --main-class com.wrath.pakviewer.DesktopApp -C out/classes .
       - name: Package portable Windows app
         shell: pwsh
         run: |
-          jpackage --type app-image --name WrathPakViewer --app-version 2.4 --input out/input --main-jar WrathPakViewer.jar --dest out/package --add-modules java.desktop
+          jpackage --type app-image --name WrathPakViewer --app-version 2.5 --input out/input --main-jar WrathPakViewer.jar --dest out/package --add-modules java.desktop
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $app = 'out/package/WrathPakViewer'
           $pak = [byte[]]::new(28)
@@ -86,9 +86,16 @@ jobs:
           if (!(Test-Path out/smoke.zip)) { throw 'The packaged launcher did not create a ZIP.' }
           Expand-Archive out/smoke.zip out/smoke
           if (!(Test-Path out/smoke/textures/index.csv)) { throw 'The packaged launcher ZIP is missing its texture index.' }
-          Compress-Archive -Path $app -DestinationPath out/WrathPakViewer_v2_4_Windows_x64.zip
+          New-Item -ItemType Directory -Force out/original
+          Copy-Item out/smoke.pak out/original/smoke.pak
+          Compress-Archive -Path out/original -DestinationPath out/other.zip
+          Start-Process -FilePath "$app/WrathPakViewer.exe" -ArgumentList 'repack', "`"$PWD/out/other.zip`"", "`"$PWD/out/restored.pak`"" -Wait
+          if ((Get-FileHash out/smoke.pak).Hash -ne (Get-FileHash out/restored.pak).Hash) {
+            throw 'Restored PAK differs from the original.'
+          }
+          Compress-Archive -Path $app -DestinationPath out/WrathPakViewer_v2_5_Windows_x64.zip
       - uses: actions/upload-artifact@v4
         with:
           name: WrathPakViewer-Windows-x64
-          path: out/WrathPakViewer_v2_4_Windows_x64.zip
+          path: out/WrathPakViewer_v2_5_Windows_x64.zip
           if-no-files-found: error

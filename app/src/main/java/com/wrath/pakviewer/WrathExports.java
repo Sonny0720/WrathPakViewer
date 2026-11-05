@@ -22,7 +22,7 @@ public final class WrathExports {
                 }
                 zip.closeEntry();
             }
-            text(zip,"README.txt","WrathPakViewer 2.4\nModels, textures, rigs, animation and audio also have individual export buttons.\nOpen models.zip/models/primary_model.obj with its MTL and textures in place.\nRigs contain skeleton data. Animation contains indexed JSON clips with compressed tracks.\nOther.zip contains audio, metadata and the untouched original archive, including undecoded data.\n");
+            text(zip,"README.txt","WrathPakViewer 2.5\nModels, textures, rigs, animation and audio also have individual export buttons.\nOpen models.zip/models/primary_model.obj with its MTL and textures in place.\nRigs contain skeleton data. Animation contains indexed JSON clips with compressed tracks.\nOther.zip contains audio, metadata and the untouched original archive, including undecoded data.\n");
         }else if("models".equals(category)){
             WrathGeometry.Result geometry=WrathGeometry.decode(data);Set<String> needed=new HashSet<>();
             for(WrathGeometry.Buffer b:geometry.buffers)for(WrathGeometry.Group g:b.groups)needed.add(WrathTextures.material(g.name));

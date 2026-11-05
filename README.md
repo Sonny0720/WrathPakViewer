@@ -35,3 +35,22 @@ java -jar WrathPakViewer.jar input.pak models output.zip
 ```
 
 Categories are `all`, `models`, `textures`, `rigs`, `animation`, and `audio`.
+
+## Repack ZIP to PAK (v2.5)
+
+On Android or Windows, choose **Repack ZIP to PAK** and open an **Export
+Everything** ZIP. You can also open its nested `other.zip` to restore the
+original PAK. Save the result as a new file and use the original game filename
+when testing it in your Xbox game files. An untouched export restores the
+original bytes exactly.
+
+For texture edits, replace the matching DDS under `textures/` inside the nested
+`textures.zip`, then put that ZIP back inside the Export Everything ZIP. Keep
+the exported DDS filename, dimensions, BC1/DXT1 or BC3/DXT5 format, and mip
+count. Save legacy DDS without a DX10 header. The repacker writes only the
+fixed-size native texture payloads and preserves the other PAK bytes. DDS
+files from the models ZIP and edits to PNG, OBJ, rigs, animation, and audio
+are outside this repack path. Edited textures have been verified structurally
+and by re-extraction. Xbox runtime testing is still pending.
+
+The Windows CLI also supports `java -jar WrathPakViewer.jar repack input.zip output.pak`.

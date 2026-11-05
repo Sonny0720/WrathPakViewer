@@ -36,7 +36,7 @@ class TextureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp=tempfile.TemporaryDirectory();cls.base=Path(cls.temp.name);cls.classes=cls.base/'classes';cls.classes.mkdir()
-        sources=[ROOT/'app/src/main/java/com/wrath/pakviewer'/f'{n}.java' for n in ('WrathGeometry','WrathTextures','WrathMotion','WrathExports')]+[ROOT/'research/ExportCli.java']
+        sources=[ROOT/'app/src/main/java/com/wrath/pakviewer'/f'{n}.java' for n in ('WrathGeometry','WrathTextures','WrathMotion','WrathExports','WrathRepack')]+[ROOT/'research/ExportCli.java',ROOT/'desktop/src/main/java/com/wrath/pakviewer/DesktopApp.java']
         subprocess.run(['java','com.sun.tools.javac.Main','--release','8','-d',str(cls.classes),*map(str,sources)],check=True,capture_output=True)
 
     @classmethod
@@ -82,6 +82,47 @@ class TextureTests(unittest.TestCase):
             self.assertIn('f 4/4/4 6/6/6 5/5/5',obj)
             self.assertIn('usemtl sand',obj)
             self.assertIn('usemtl stone',obj)
+
+    def test_repack_restores_and_patches_only_native_dds_payload(self):
+        original=fixture()
+        source=self.base/'repack.zip'
+        output=self.base/'repacked.pak'
+        with self.export(original,'all') as outer:
+            other=outer.read('other.zip')
+            textures=outer.read('textures.zip')
+        command=['java','-cp',str(self.classes),'com.wrath.pakviewer.DesktopApp',
+                 'repack',str(source),str(output)]
+        source.write_bytes(other)
+        subprocess.run(command,check=True,capture_output=True)
+        self.assertEqual(output.read_bytes(),original)
+
+        def bundle(change=None):
+            edited=io.BytesIO()
+            with zipfile.ZipFile(io.BytesIO(textures)) as before, zipfile.ZipFile(edited,'w') as after:
+                for name in before.namelist():
+                    data=bytearray(before.read(name))
+                    if name.endswith('.dds') and change is not None:
+                        change(data)
+                    after.writestr(name,data)
+            with zipfile.ZipFile(source,'w') as outer:
+                outer.writestr('other.zip',other)
+                outer.writestr('textures.zip',edited.getvalue())
+
+        bundle()
+        subprocess.run(command,check=True,capture_output=True)
+        self.assertEqual(output.read_bytes(),original)
+        bundle(lambda data: data.__setitem__(128,data[128]^1))
+        subprocess.run(command,check=True,capture_output=True)
+        payload=scan(original)[0].levels[0][2]
+        expected=bytearray(original)
+        expected[payload]^=1
+        self.assertEqual(output.read_bytes(),expected)
+
+        bundle(lambda data: data.__setitem__(16,16))
+        failed=subprocess.run(command,capture_output=True)
+        self.assertNotEqual(failed.returncode,0)
+        self.assertIn(b'DDS must match',failed.stderr)
+        self.assertEqual(output.read_bytes(),expected)
 
     def test_bc1_known_red(self):
         data=fixture();self.assertEqual(self.compare(data),1)
