@@ -10,7 +10,7 @@ android {
         applicationId 'com.wrath.pakviewer'
         minSdk 26
         targetSdk 28
-        versionCode 18
-        versionName '1.8'
+        versionCode 19
+        versionName '1.9'
     }
 }
