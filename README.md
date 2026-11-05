@@ -7,3 +7,11 @@ Current capabilities: Android file picker, ASCII string browsing/search with hex
 **Not implemented:** proprietary asset directory parsing, mesh decoding, texture decoding, 3D preview, model/texture extraction. The presence of a RIFF signature does not guarantee a valid independent WAV asset. Do not mistake string matches for a real internal file listing.
 
 This is an early prototype. The parser has a 150 MB safety cap and may use considerable memory for large files.
+
+
+## Character geometry
+
+The feature branch now includes an Xbox geometry OBJ ZIP export, tested against
+Cyclops, Centaur and Archdemon archives. Recognizable primary assemblies have
+been visually inspected. Rigging, textures, animation, PS2 layouts and complete
+archive coverage remain unfinished. See [geometry findings and reproduction](research/GEOMETRY.md).

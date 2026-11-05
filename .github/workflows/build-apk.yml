@@ -24,6 +24,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Verify research scripts and geometry decoder
+        run: |
+          python3 -m compileall -q research
+          python3 -m unittest discover -s research/tests -v
+
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
         with:

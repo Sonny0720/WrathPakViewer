@@ -24,7 +24,7 @@ with a.obj.open('w') as out:
    edges=sorted(math.dist(verts[x],verts[y]) for f in faces for x,y in ((f[0],f[1]),(f[1],f[2]),(f[2],f[0])))
    audit.append(dict(part=r['name'].split(':')[-1],header=hex(h),subtype=r['subtype'],mode=mode,faces=len(faces),max_edge=round(edges[-1],3) if edges else '',p95_edge=round(edges[int(.95*(len(edges)-1))],3) if edges else ''))
    if mode=='list':
-    for f in faces:out.write('f %d %d %d\n'%tuple(i+1 for i in f)
+    for f in faces:out.write('f %d %d %d\n'%tuple(i+1 for i in f))
 with a.audit.open('w',newline='') as f:
  w=csv.DictWriter(f,fieldnames=list(audit[0]));w.writeheader();w.writerows(audit)
 print('Saved',a.obj,a.audit,'list faces',sum(r['faces'] for r in audit if r['mode']=='list'))
