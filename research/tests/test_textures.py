@@ -34,7 +34,7 @@ class TextureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp=tempfile.TemporaryDirectory();cls.base=Path(cls.temp.name);cls.classes=cls.base/'classes';cls.classes.mkdir()
-        sources=[ROOT/'app/src/main/java/com/wrath/pakviewer'/f'{n}.java' for n in ('WrathGeometry','WrathTextures','WrathExports')]+[ROOT/'research/ExportCli.java']
+        sources=[ROOT/'app/src/main/java/com/wrath/pakviewer'/f'{n}.java' for n in ('WrathGeometry','WrathTextures','WrathMotion','WrathExports')]+[ROOT/'research/ExportCli.java']
         subprocess.run(['java','com.sun.tools.javac.Main','--release','8','-d',str(cls.classes),*map(str,sources)],check=True,capture_output=True)
 
     @classmethod
@@ -95,7 +95,7 @@ class TextureTests(unittest.TestCase):
                 with zipfile.ZipFile(io.BytesIO(outer.read(category+'.zip'))) as child:
                     self.assertIsNone(child.testzip())
                     if category=='other':self.assertEqual(child.read('original/source.pak'),data)
-                    if category in ('rigs','animation'):self.assertIn(b'not implemented',child.read('README.txt'))
+                    if category == 'animation':self.assertIn(b'not implemented',child.read('README.txt'))
                     if category=='models':self.assertIn('EXPORT_ERROR.txt',child.namelist())
 
     @unittest.skipUnless(os.environ.get('WRATH_PAK_DIR'),'Original archives not committed')
@@ -141,4 +141,17 @@ class TextureTests(unittest.TestCase):
                     if category=='models':
                         self.assertIn('models/primary_model.obj',child.namelist())
                         self.assertIn('models/materials.mtl',child.namelist())
+                    if category == 'rigs':
+                        tables = [name for name in child.namelist() if name.endswith('.csv')]
+                        self.assertEqual(len(tables), 1)
+                        joints = list(csv.DictReader(io.StringIO(child.read(tables[0]).decode())))
+                        self.assertEqual(len(joints), 98)
+                        self.assertEqual(joints[0]['parent'], '-1')
+                        self.assertEqual(joints[1]['parent'], '0')
+                    if category == 'animation':
+                        clips = list(csv.DictReader(io.StringIO(child.read('clips.csv').decode())))
+                        self.assertEqual(len(clips), 66)
+                        for clip in clips:
+                            start, length = int(clip['record_offset']), int(clip['record_bytes'])
+                            self.assertEqual(child.read(clip['file']), data[start:start+length])
                     if category=='other':self.assertEqual(child.read('original/source.pak'),data)

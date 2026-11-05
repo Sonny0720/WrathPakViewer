@@ -18,19 +18,18 @@ public class MainActivity extends Activity {
 
   @Override public void onCreate(Bundle state){super.onCreate(state);
     LinearLayout root=new LinearLayout(this);root.setOrientation(1);root.setPadding(16,12,16,12);
-    TextView title=new TextView(this);title.setText("WrathPakViewer · v2.1");title.setTextSize(22);root.addView(title);
+    TextView title=new TextView(this);title.setText("WrathPakViewer · v2.2");title.setTextSize(22);root.addView(title);
     Button open=button(root,"OPEN PAK FILE");open.setOnClickListener(v->{
       if(busy){Toast.makeText(this,"Wait for the current operation",Toast.LENGTH_SHORT).show();return;}
       busy=true;Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);i.setType("*/*");i.addCategory(Intent.CATEGORY_OPENABLE);startActivityForResult(i,OPEN);
     });
     status=new TextView(this);status.setText("No PAK loaded");root.addView(status);
+    button(root,"EXPORT EVERYTHING").setOnClickListener(v->requestSave("all","wrath_everything.zip","application/zip"));
     button(root,"EXPORT MODELS").setOnClickListener(v->requestSave("models","wrath_models.zip","application/zip"));
     button(root,"EXPORT TEXTURES").setOnClickListener(v->requestSave("textures","wrath_textures.zip","application/zip"));
-    button(root,"EXPORT RIGS (INFO ONLY)").setOnClickListener(v->requestSave("rigs","wrath_rigs_info.zip","application/zip"));
-    button(root,"EXPORT ANIMATION (INFO ONLY)").setOnClickListener(v->requestSave("animation","wrath_animation_info.zip","application/zip"));
-    button(root,"EXPORT EVERYTHING ELSE").setOnClickListener(v->requestSave("other","wrath_other_assets.zip","application/zip"));
-    button(root,"EXPORT EVERYTHING").setOnClickListener(v->requestSave("all","wrath_everything.zip","application/zip"));
-    output=new TextView(this);output.setText("Models include OBJ, MTL and matching textures. Textures export as PNG and DDS. Rigs and animation currently export information only. Everything Else preserves audio, metadata and the original archive.");root.addView(output);
+    button(root,"EXPORT RIGS").setOnClickListener(v->requestSave("rigs","wrath_rigs.zip","application/zip"));
+    button(root,"EXPORT ANIMATION (RAW)").setOnClickListener(v->requestSave("animation","wrath_animation_raw.zip","application/zip"));
+    output=new TextView(this);output.setText("Models include OBJ, MTL and matching textures. Textures export as PNG and DDS. Rigs export skeleton tables and previews. Animation exports raw clip records. Export Everything preserves audio, metadata and the original archive.");root.addView(output);
     ScrollView page=new ScrollView(this);page.addView(root);setContentView(page);
   }
   private Button button(LinearLayout parent,String label){Button b=new Button(this);b.setText(label);parent.addView(b);return b;}
@@ -56,7 +55,7 @@ public class MainActivity extends Activity {
         try(OutputStream raw=getContentResolver().openOutputStream(uri)){
           if(raw==null)throw new IOException("Cannot open destination");
           try(ZipOutputStream zip=new ZipOutputStream(new BufferedOutputStream(raw))){WrathExports.write(exportData,sourceName,type,zip);}
-          runOnUiThread(()->{busy=false;status.setText("Export complete: "+type+("rigs".equals(type)||"animation".equals(type)?" (information only)":""));});
+          runOnUiThread(()->{busy=false;status.setText("Export complete: "+type);});
         }catch(Exception e){runOnUiThread(()->{busy=false;status.setText("Export failed: "+e.getMessage());});}
       }).start();
     }else busy=false;

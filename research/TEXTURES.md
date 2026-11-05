@@ -70,7 +70,7 @@ The previews use the exported OBJ/MTL/PNG files, a right-handed orthographic
 camera, front-face culling, a z-buffer, texture coordinates and generated vertex
 normals. Geometry and UVs are not altered to produce the previews.
 
-## Simplified app
+## Version 2.1 interface (historical)
 
 The app now has Open PAK plus six export buttons:
 
@@ -100,6 +100,7 @@ Version: Android versionCode 21, versionName 2.1.
 java com.sun.tools.javac.Main --release 8 -d /tmp/wrath \
   app/src/main/java/com/wrath/pakviewer/WrathGeometry.java \
   app/src/main/java/com/wrath/pakviewer/WrathTextures.java \
+  app/src/main/java/com/wrath/pakviewer/WrathMotion.java \
   app/src/main/java/com/wrath/pakviewer/WrathExports.java research/ExportCli.java
 java -cp /tmp/wrath ExportCli character.pak textures textures.zip
 java -cp /tmp/wrath ExportCli character.pak models models.zip
