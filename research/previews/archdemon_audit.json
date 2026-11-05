@@ -1,0 +1,537 @@
+{
+  "archive": "c_iarchdemon-dc_archdemon-(2).pak",
+  "sha256": "140f031cd070eb7d09c6f9ffee8be70b56dc54660c0d2a41fdbed51e4296e005",
+  "status": "recognizability requires visual inspection; completeness unproven",
+  "exports": [
+    "primary_model.obj",
+    "part_buffer_00.obj",
+    "part_buffer_01.obj",
+    "part_buffer_02.obj",
+    "part_buffer_03.obj",
+    "part_buffer_04.obj",
+    "parts_C_Demon_C_DC_Demon_main_c_demon_msh.obj",
+    "parts_C_Demon_C_DO_ArchDemo_low_c_demon_msh.obj",
+    "parts_C_Demon_C_DO_Demon_main_c_demon_msh.obj"
+  ],
+  "rejected": [],
+  "buffers": [
+    {
+      "offset": 96643,
+      "vertices": 6660,
+      "base_vertices": 5782,
+      "referenced_vertices": 6660,
+      "source": "meshes\\chars\\c_demon.msh",
+      "variant": "C_Demon_C_DC_Demon_main",
+      "groups": [
+        {
+          "name": "C_Demon:C_DC_Demon_LegHan_V1",
+          "offset": 33661,
+          "end": 44385,
+          "batches": [
+            {
+              "offset": 33705,
+              "list_indices": 693,
+              "strip_indices": [
+                724
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 36617,
+              "list_indices": 456,
+              "strip_indices": [
+                434
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 38475,
+              "list_indices": 279,
+              "strip_indices": [
+                138
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 39387,
+              "list_indices": 231,
+              "strip_indices": [
+                222
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 40371,
+              "list_indices": 648,
+              "strip_indices": [
+                405
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 42555,
+              "list_indices": 483,
+              "strip_indices": [
+                161
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 43921,
+              "list_indices": 171,
+              "strip_indices": [
+                23
+              ],
+              "palette_entries": 20,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 2091
+        },
+        {
+          "name": "C_Demon:C_DC_Demon_TorHea_V1",
+          "offset": 44484,
+          "end": 53278,
+          "batches": [
+            {
+              "offset": 44520,
+              "list_indices": 1260,
+              "strip_indices": [
+                913
+              ],
+              "palette_entries": 2,
+              "vertex_stream": "appended"
+            },
+            {
+              "offset": 48914,
+              "list_indices": 1242,
+              "strip_indices": [
+                904
+              ],
+              "palette_entries": 18,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1868
+        },
+        {
+          "name": "C_Demon:C_DC_Demon_Wing_V1",
+          "offset": 53377,
+          "end": 59537,
+          "batches": [
+            {
+              "offset": 53419,
+              "list_indices": 981,
+              "strip_indices": [
+                1033
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 57525,
+              "list_indices": 447,
+              "strip_indices": [
+                377
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 59251,
+              "list_indices": 84,
+              "strip_indices": [
+                32
+              ],
+              "palette_entries": 9,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1307
+        },
+        {
+          "name": "C_Demon:C_DC_Demon_Armor_V1",
+          "offset": 59636,
+          "end": 61777,
+          "batches": [
+            {
+              "offset": 59679,
+              "list_indices": 606,
+              "strip_indices": [
+                419
+              ],
+              "palette_entries": 6,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 405
+        },
+        {
+          "name": "C_Demon:C_DC_Demon_EyeOpe_V1",
+          "offset": 61876,
+          "end": 62092,
+          "batches": [
+            {
+              "offset": 61912,
+              "list_indices": 12,
+              "strip_indices": [
+                22
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "appended"
+            },
+            {
+              "offset": 62026,
+              "list_indices": 18,
+              "strip_indices": [],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 24
+        }
+      ]
+    },
+    {
+      "offset": 350733,
+      "vertices": 1421,
+      "base_vertices": 1421,
+      "referenced_vertices": 1421,
+      "source": "meshes\\chars\\c_demon.msh",
+      "variant": "C_Demon_C_DC_Demon_main",
+      "groups": [
+        {
+          "name": "C_Demon:C_DC_Demon_TorHea_V1",
+          "offset": 343864,
+          "end": 344802,
+          "batches": [
+            {
+              "offset": 343908,
+              "list_indices": 105,
+              "strip_indices": [
+                323
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 232
+        },
+        {
+          "name": "C_Demon:C_DC_Demon_Armor_V1",
+          "offset": 344901,
+          "end": 350354,
+          "batches": [
+            {
+              "offset": 344944,
+              "list_indices": 1545,
+              "strip_indices": [
+                1133
+              ],
+              "palette_entries": 9,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1149
+        },
+        {
+          "name": "C_Demon:C_DC_Demon_Wing_V1",
+          "offset": 350453,
+          "end": 350717,
+          "batches": [
+            {
+              "offset": 350495,
+              "list_indices": 96,
+              "strip_indices": [],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 32
+        }
+      ]
+    },
+    {
+      "offset": 409025,
+      "vertices": 1436,
+      "base_vertices": 1436,
+      "referenced_vertices": 1436,
+      "source": "meshes\\chars\\c_demon.msh",
+      "variant": "C_Demon_C_DO_Demon_main",
+      "groups": [
+        {
+          "name": "C_Demon:C_DO_Demon_TorHea_V1",
+          "offset": 402349,
+          "end": 403279,
+          "batches": [
+            {
+              "offset": 402393,
+              "list_indices": 180,
+              "strip_indices": [
+                244
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 210
+        },
+        {
+          "name": "C_Demon:C_DO_Demon_Armor_V1",
+          "offset": 403378,
+          "end": 407365,
+          "batches": [
+            {
+              "offset": 403421,
+              "list_indices": 675,
+              "strip_indices": [
+                1271
+              ],
+              "palette_entries": 8,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1028
+        },
+        {
+          "name": "C_Demon:C_DO_Demon_Armor_V1",
+          "offset": 407464,
+          "end": 408767,
+          "batches": [
+            {
+              "offset": 407507,
+              "list_indices": 207,
+              "strip_indices": [
+                397
+              ],
+              "palette_entries": 8,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 314
+        },
+        {
+          "name": "C_Demon:C_DO_Demon_Armor_V1",
+          "offset": 408866,
+          "end": 409009,
+          "batches": [
+            {
+              "offset": 408909,
+              "list_indices": 6,
+              "strip_indices": [
+                25
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 20
+        }
+      ]
+    },
+    {
+      "offset": 468698,
+      "vertices": 1267,
+      "base_vertices": 1267,
+      "referenced_vertices": 1267,
+      "source": "meshes\\chars\\c_demon.msh",
+      "variant": null,
+      "groups": [
+        {
+          "name": "C_Demon:C_DO_Demon_Armor_V1",
+          "offset": 461402,
+          "end": 461667,
+          "batches": [
+            {
+              "offset": 461445,
+              "list_indices": 30,
+              "strip_indices": [
+                62
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 48
+        },
+        {
+          "name": "C_Demon:C_DC_Demon_L_V1",
+          "offset": 463207,
+          "end": 466474,
+          "batches": [
+            {
+              "offset": 463246,
+              "list_indices": 315,
+              "strip_indices": [
+                276
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 464506,
+              "list_indices": 210,
+              "strip_indices": [
+                139
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 465282,
+              "list_indices": 165,
+              "strip_indices": [
+                110
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 465910,
+              "list_indices": 168,
+              "strip_indices": [
+                80
+              ],
+              "palette_entries": 16,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 633
+        },
+        {
+          "name": "C_Demon:C_DC_Demon_L_V1",
+          "offset": 466573,
+          "end": 468682,
+          "batches": [
+            {
+              "offset": 466612,
+              "list_indices": 210,
+              "strip_indices": [
+                205
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 467520,
+              "list_indices": 312,
+              "strip_indices": [
+                78
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 468378,
+              "list_indices": 99,
+              "strip_indices": [
+                27
+              ],
+              "palette_entries": 8,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 373
+        }
+      ]
+    },
+    {
+      "offset": 520324,
+      "vertices": 1336,
+      "base_vertices": 1336,
+      "referenced_vertices": 1336,
+      "source": "meshes\\chars\\c_demon.msh",
+      "variant": "C_Demon_C_DO_ArchDemo_low",
+      "groups": [
+        {
+          "name": "C_Demon:C_DO_ArchDemo_L_V1",
+          "offset": 514863,
+          "end": 518521,
+          "batches": [
+            {
+              "offset": 514905,
+              "list_indices": 663,
+              "strip_indices": [
+                230
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 516769,
+              "list_indices": 168,
+              "strip_indices": [
+                111
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 517405,
+              "list_indices": 144,
+              "strip_indices": [
+                188
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 518147,
+              "list_indices": 135,
+              "strip_indices": [
+                16
+              ],
+              "palette_entries": 18,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 686
+        },
+        {
+          "name": "C_Demon:C_DO_ArchDemo_L_V1",
+          "offset": 518620,
+          "end": 520308,
+          "batches": [
+            {
+              "offset": 518662,
+              "list_indices": 210,
+              "strip_indices": [
+                216
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 519592,
+              "list_indices": 240,
+              "strip_indices": [
+                86
+              ],
+              "palette_entries": 14,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 314
+        }
+      ]
+    }
+  ],
+  "visual_verification": {
+    "version": "2.0",
+    "scope": "primary main assembly",
+    "views": [
+      "shaded front",
+      "shaded side",
+      "shaded perspective"
+    ],
+    "backface_culling": true,
+    "preview": "v2_shaded.png",
+    "result": "recognizable static geometry; full asset extraction unfinished"
+  }
+}

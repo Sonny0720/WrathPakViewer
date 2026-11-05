@@ -6,6 +6,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -20,6 +23,14 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+
+      - name: Install texture verification dependency
+        run: python3 -m pip install Pillow
+
+      - name: Verify geometry, texture and export decoders
+        run: |
+          python3 -m compileall -q research
+          python3 -m unittest discover -s research/tests -v
 
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
@@ -44,4 +55,47 @@ jobs:
         with:
           name: WrathPakViewer-APK
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile desktop and shared decoders
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force out/classes, out/input
+          $shared = 'app/src/main/java/com/wrath/pakviewer'
+          javac -encoding UTF-8 --release 17 -d out/classes "$shared/WrathGeometry.java" "$shared/WrathTextures.java" "$shared/WrathMotion.java" "$shared/WrathExports.java" "$shared/WrathRepack.java" desktop/src/main/java/com/wrath/pakviewer/DesktopApp.java
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          jar --create --file out/input/WrathPakViewer.jar --main-class com.wrath.pakviewer.DesktopApp -C out/classes .
+      - name: Package portable Windows app
+        shell: pwsh
+        run: |
+          jpackage --type app-image --name WrathPakViewer --app-version 2.5 --input out/input --main-jar WrathPakViewer.jar --dest out/package --add-modules java.desktop
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $app = 'out/package/WrathPakViewer'
+          $pak = [byte[]]::new(28)
+          [BitConverter]::GetBytes([int]0x52049).CopyTo($pak, 0)
+          [IO.File]::WriteAllBytes("$PWD/out/smoke.pak", $pak)
+          Start-Process -FilePath "$app/WrathPakViewer.exe" -ArgumentList "`"$PWD/out/smoke.pak`"", 'textures', "`"$PWD/out/smoke.zip`"" -Wait
+          if (!(Test-Path out/smoke.zip)) { throw 'The packaged launcher did not create a ZIP.' }
+          Expand-Archive out/smoke.zip out/smoke
+          if (!(Test-Path out/smoke/textures/index.csv)) { throw 'The packaged launcher ZIP is missing its texture index.' }
+          New-Item -ItemType Directory -Force out/original
+          Copy-Item out/smoke.pak out/original/smoke.pak
+          Compress-Archive -Path out/original -DestinationPath out/other.zip
+          Start-Process -FilePath "$app/WrathPakViewer.exe" -ArgumentList 'repack', "`"$PWD/out/other.zip`"", "`"$PWD/out/restored.pak`"" -Wait
+          if ((Get-FileHash out/smoke.pak).Hash -ne (Get-FileHash out/restored.pak).Hash) {
+            throw 'Restored PAK differs from the original.'
+          }
+          Compress-Archive -Path $app -DestinationPath out/WrathPakViewer_v2_5_Windows_x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WrathPakViewer-Windows-x64
+          path: out/WrathPakViewer_v2_5_Windows_x64.zip
           if-no-files-found: error

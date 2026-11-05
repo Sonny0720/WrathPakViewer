@@ -1,0 +1,72 @@
+[
+  {
+    "archive": "c_icyclops-dc_cyclops-(1).pak",
+    "sha256": "eff8491ea234062612597b573f9b34982d5416a424fc001a9242b8024adbe448",
+    "buffers_vertices_triangles": [
+      [
+        2158,
+        2724
+      ],
+      [
+        2930,
+        4250
+      ],
+      [
+        1190,
+        1075
+      ]
+    ]
+  },
+  {
+    "archive": "c_icentaur-lo_centaur-.pak",
+    "sha256": "6b496bc9a0fdf15df366672d2807be6c527548b63113127be4fbdc005c45d2fe",
+    "buffers_vertices_triangles": [
+      [
+        5268,
+        5327
+      ],
+      [
+        1467,
+        1505
+      ],
+      [
+        1609,
+        1254
+      ],
+      [
+        973,
+        944
+      ],
+      [
+        1240,
+        1002
+      ]
+    ]
+  },
+  {
+    "archive": "c_iarchdemon-dc_archdemon-(2).pak",
+    "sha256": "140f031cd070eb7d09c6f9ffee8be70b56dc54660c0d2a41fdbed51e4296e005",
+    "buffers_vertices_triangles": [
+      [
+        6660,
+        5695
+      ],
+      [
+        1421,
+        1413
+      ],
+      [
+        1436,
+        1572
+      ],
+      [
+        1267,
+        1054
+      ],
+      [
+        1336,
+        1000
+      ]
+    ]
+  }
+]

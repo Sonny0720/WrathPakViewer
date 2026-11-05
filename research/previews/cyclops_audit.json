@@ -1,0 +1,329 @@
+{
+  "archive": "c_icyclops-dc_cyclops-(1).pak",
+  "sha256": "eff8491ea234062612597b573f9b34982d5416a424fc001a9242b8024adbe448",
+  "status": "recognizability requires visual inspection; completeness unproven",
+  "exports": [
+    "primary_model.obj",
+    "part_buffer_00.obj",
+    "part_buffer_01.obj",
+    "part_buffer_02.obj",
+    "parts_C_Cyclops_C_DC_Cyclops_low_c_cyclops_msh.obj",
+    "parts_C_Cyclops_C_DC_Cyclops_main_c_cyclops_msh.obj"
+  ],
+  "rejected": [],
+  "buffers": [
+    {
+      "offset": 45680,
+      "vertices": 2158,
+      "base_vertices": 2158,
+      "referenced_vertices": 2158,
+      "source": "meshes\\chars\\c_cyclops.msh",
+      "variant": "C_Cyclops_C_DC_Cyclops_main",
+      "groups": [
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_body_V1",
+          "offset": 33560,
+          "end": 43564,
+          "batches": [
+            {
+              "offset": 33606,
+              "list_indices": 855,
+              "strip_indices": [
+                1460
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 38314,
+              "list_indices": 249,
+              "strip_indices": [
+                689
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 40268,
+              "list_indices": 453,
+              "strip_indices": [
+                684
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 42620,
+              "list_indices": 171,
+              "strip_indices": [
+                266
+              ],
+              "palette_entries": 17,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 2434
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_body_V1",
+          "offset": 43679,
+          "end": 45433,
+          "batches": [
+            {
+              "offset": 43725,
+              "list_indices": 630,
+              "strip_indices": [
+                114
+              ],
+              "palette_entries": 20,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 45289,
+              "list_indices": 54,
+              "strip_indices": [],
+              "palette_entries": 4,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 282
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_body_V1",
+          "offset": 45548,
+          "end": 45664,
+          "batches": [
+            {
+              "offset": 45594,
+              "list_indices": 0,
+              "strip_indices": [
+                16
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 8
+        }
+      ]
+    },
+    {
+      "offset": 142775,
+      "vertices": 2930,
+      "base_vertices": 2930,
+      "referenced_vertices": 2930,
+      "source": "meshes\\chars\\c_cyclops.msh",
+      "variant": "C_Cyclops_C_DC_Cyclops_main",
+      "groups": [
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_Armor_02_V1",
+          "offset": 124229,
+          "end": 128875,
+          "batches": [
+            {
+              "offset": 124279,
+              "list_indices": 783,
+              "strip_indices": [
+                1491
+              ],
+              "palette_entries": 6,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1159
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_Armor_01_V1",
+          "offset": 128990,
+          "end": 132408,
+          "batches": [
+            {
+              "offset": 129040,
+              "list_indices": 579,
+              "strip_indices": [
+                1074
+              ],
+              "palette_entries": 13,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 859
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_Armor_02_V1",
+          "offset": 132523,
+          "end": 134163,
+          "batches": [
+            {
+              "offset": 132573,
+              "list_indices": 369,
+              "strip_indices": [
+                400
+              ],
+              "palette_entries": 8,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 370
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_Armor_02_V1",
+          "offset": 134278,
+          "end": 136842,
+          "batches": [
+            {
+              "offset": 134328,
+              "list_indices": 456,
+              "strip_indices": [
+                763
+              ],
+              "palette_entries": 20,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 596
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_Armor_01_V1",
+          "offset": 136957,
+          "end": 140509,
+          "batches": [
+            {
+              "offset": 137007,
+              "list_indices": 498,
+              "strip_indices": [
+                1226
+              ],
+              "palette_entries": 9,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 910
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_Eye_09_V1",
+          "offset": 140624,
+          "end": 140774,
+          "batches": [
+            {
+              "offset": 140672,
+              "list_indices": 36,
+              "strip_indices": [],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 12
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_Armor_02_V1",
+          "offset": 140889,
+          "end": 141043,
+          "batches": [
+            {
+              "offset": 140939,
+              "list_indices": 6,
+              "strip_indices": [
+                27
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 22
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_Armor_02_V1",
+          "offset": 141158,
+          "end": 142236,
+          "batches": [
+            {
+              "offset": 141208,
+              "list_indices": 201,
+              "strip_indices": [
+                277
+              ],
+              "palette_entries": 18,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 234
+        },
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_Armor_02_V1",
+          "offset": 142351,
+          "end": 142759,
+          "batches": [
+            {
+              "offset": 142401,
+              "list_indices": 45,
+              "strip_indices": [
+                111
+              ],
+              "palette_entries": 5,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 88
+        }
+      ]
+    },
+    {
+      "offset": 255775,
+      "vertices": 1190,
+      "base_vertices": 1190,
+      "referenced_vertices": 1190,
+      "source": "meshes\\chars\\c_cyclops.msh",
+      "variant": "C_Cyclops_C_DC_Cyclops_low",
+      "groups": [
+        {
+          "name": "C_Cyclops:C_DC_Cyclops_L_V1",
+          "offset": 250682,
+          "end": 255759,
+          "batches": [
+            {
+              "offset": 250725,
+              "list_indices": 816,
+              "strip_indices": [
+                673
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 253781,
+              "list_indices": 252,
+              "strip_indices": [
+                352
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 255067,
+              "list_indices": 144,
+              "strip_indices": [
+                171
+              ],
+              "palette_entries": 13,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1075
+        }
+      ]
+    }
+  ],
+  "visual_verification": {
+    "version": "2.0",
+    "scope": "primary main assembly",
+    "views": [
+      "shaded front",
+      "shaded side",
+      "shaded perspective"
+    ],
+    "backface_culling": true,
+    "preview": "v2_shaded.png",
+    "result": "recognizable static geometry; full asset extraction unfinished"
+  }
+}

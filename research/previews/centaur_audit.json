@@ -1,0 +1,571 @@
+{
+  "archive": "c_icentaur-lo_centaur-.pak",
+  "sha256": "6b496bc9a0fdf15df366672d2807be6c527548b63113127be4fbdc005c45d2fe",
+  "status": "recognizability requires visual inspection; completeness unproven",
+  "exports": [
+    "primary_model.obj",
+    "part_buffer_00.obj",
+    "part_buffer_01.obj",
+    "part_buffer_02.obj",
+    "part_buffer_03.obj",
+    "part_buffer_04.obj",
+    "parts_C_Centaur_C_LC_Centaur_low_c_centaur_msh.obj",
+    "parts_C_Centaur_C_LC_Centaur_main_c_centaur_msh.obj",
+    "parts_C_Centaur_C_LO_Centaur_low_c_centaur_msh.obj",
+    "parts_C_Centaur_C_LO_Centaur_main_c_centaur_msh.obj"
+  ],
+  "rejected": [],
+  "buffers": [
+    {
+      "offset": 145292,
+      "vertices": 5268,
+      "base_vertices": 4654,
+      "referenced_vertices": 5268,
+      "source": "meshes\\chars\\c_centaur.msh",
+      "variant": "C_Centaur_C_LO_Centaur_main",
+      "groups": [
+        {
+          "name": "C_Centaur:C_LO_Centaur_Head_V1",
+          "offset": 93800,
+          "end": 101870,
+          "batches": [
+            {
+              "offset": 93838,
+              "list_indices": 441,
+              "strip_indices": [
+                787
+              ],
+              "palette_entries": 3,
+              "vertex_stream": "appended"
+            },
+            {
+              "offset": 96344,
+              "list_indices": 777,
+              "strip_indices": [
+                781
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 99538,
+              "list_indices": 534,
+              "strip_indices": [
+                597
+              ],
+              "palette_entries": 17,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1811
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Torso_V1",
+          "offset": 101985,
+          "end": 105498,
+          "batches": [
+            {
+              "offset": 102024,
+              "list_indices": 9,
+              "strip_indices": [
+                27
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "appended"
+            },
+            {
+              "offset": 102142,
+              "list_indices": 879,
+              "strip_indices": [
+                773
+              ],
+              "palette_entries": 8,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 728
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Body_V1",
+          "offset": 105613,
+          "end": 114269,
+          "batches": [
+            {
+              "offset": 105659,
+              "list_indices": 1497,
+              "strip_indices": [
+                1680
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 112091,
+              "list_indices": 606,
+              "strip_indices": [
+                450
+              ],
+              "palette_entries": 15,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1880
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Armor_V1",
+          "offset": 114384,
+          "end": 114917,
+          "batches": [
+            {
+              "offset": 114431,
+              "list_indices": 0,
+              "strip_indices": [
+                223
+              ],
+              "palette_entries": 2,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 160
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Horn_V1",
+          "offset": 115032,
+          "end": 116024,
+          "batches": [
+            {
+              "offset": 115078,
+              "list_indices": 81,
+              "strip_indices": [
+                373
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 270
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Eye_V1",
+          "offset": 116139,
+          "end": 116408,
+          "batches": [
+            {
+              "offset": 116176,
+              "list_indices": 30,
+              "strip_indices": [
+                63
+              ],
+              "palette_entries": 1,
+              "vertex_stream": "appended"
+            }
+          ],
+          "triangles": 48
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Armor_V1",
+          "offset": 116523,
+          "end": 117290,
+          "batches": [
+            {
+              "offset": 116570,
+              "list_indices": 168,
+              "strip_indices": [
+                171
+              ],
+              "palette_entries": 3,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 160
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Hair_V1",
+          "offset": 117405,
+          "end": 117803,
+          "batches": [
+            {
+              "offset": 117451,
+              "list_indices": 42,
+              "strip_indices": [
+                106
+              ],
+              "palette_entries": 10,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 82
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Hair_V1",
+          "offset": 117918,
+          "end": 118148,
+          "batches": [
+            {
+              "offset": 117964,
+              "list_indices": 12,
+              "strip_indices": [
+                55
+              ],
+              "palette_entries": 7,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 34
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Hair_V1",
+          "offset": 118263,
+          "end": 118525,
+          "batches": [
+            {
+              "offset": 118309,
+              "list_indices": 30,
+              "strip_indices": [
+                53
+              ],
+              "palette_entries": 7,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 38
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Hair_V1",
+          "offset": 118640,
+          "end": 118870,
+          "batches": [
+            {
+              "offset": 118686,
+              "list_indices": 24,
+              "strip_indices": [
+                43
+              ],
+              "palette_entries": 7,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 34
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Hair_V1",
+          "offset": 118985,
+          "end": 119385,
+          "batches": [
+            {
+              "offset": 119031,
+              "list_indices": 42,
+              "strip_indices": [
+                107
+              ],
+              "palette_entries": 10,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 82
+        }
+      ]
+    },
+    {
+      "offset": 347452,
+      "vertices": 1467,
+      "base_vertices": 1467,
+      "referenced_vertices": 1467,
+      "source": "meshes\\chars\\c_centaur.msh",
+      "variant": "C_Centaur_C_LO_Centaur_main",
+      "groups": [
+        {
+          "name": "C_Centaur:C_LO_Centaur_Torso_V1",
+          "offset": 340931,
+          "end": 341402,
+          "batches": [
+            {
+              "offset": 340978,
+              "list_indices": 51,
+              "strip_indices": [
+                137
+              ],
+              "palette_entries": 6,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 96
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Armor_V1",
+          "offset": 341517,
+          "end": 346582,
+          "batches": [
+            {
+              "offset": 341564,
+              "list_indices": 1056,
+              "strip_indices": [
+                1423
+              ],
+              "palette_entries": 12,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1209
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_Armor_V1",
+          "offset": 346697,
+          "end": 347436,
+          "batches": [
+            {
+              "offset": 346744,
+              "list_indices": 24,
+              "strip_indices": [
+                301
+              ],
+              "palette_entries": 3,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 200
+        }
+      ]
+    },
+    {
+      "offset": 407277,
+      "vertices": 1609,
+      "base_vertices": 1609,
+      "referenced_vertices": 1609,
+      "source": "meshes\\chars\\c_centaur.msh",
+      "variant": "C_Centaur_C_LC_Centaur_main",
+      "groups": [
+        {
+          "name": "C_Centaur:C_LC_Centaur_Torso_V1",
+          "offset": 400816,
+          "end": 401061,
+          "batches": [
+            {
+              "offset": 400863,
+              "list_indices": 42,
+              "strip_indices": [
+                35
+              ],
+              "palette_entries": 4,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 38
+        },
+        {
+          "name": "C_Centaur:C_LC_Centaur_Armor_V1",
+          "offset": 401176,
+          "end": 406145,
+          "batches": [
+            {
+              "offset": 401223,
+              "list_indices": 1572,
+              "strip_indices": [
+                861
+              ],
+              "palette_entries": 10,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 1021
+        },
+        {
+          "name": "C_Centaur:C_LC_Centaur_Hair_V1",
+          "offset": 406260,
+          "end": 406932,
+          "batches": [
+            {
+              "offset": 406306,
+              "list_indices": 30,
+              "strip_indices": [
+                260
+              ],
+              "palette_entries": 5,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 163
+        },
+        {
+          "name": "C_Centaur:C_LC_Centaur_Hair_V1",
+          "offset": 407047,
+          "end": 407261,
+          "batches": [
+            {
+              "offset": 407093,
+              "list_indices": 15,
+              "strip_indices": [
+                48
+              ],
+              "palette_entries": 3,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 32
+        }
+      ]
+    },
+    {
+      "offset": 470545,
+      "vertices": 973,
+      "base_vertices": 973,
+      "referenced_vertices": 973,
+      "source": "meshes\\chars\\c_centaur.msh",
+      "variant": "C_Centaur_C_LO_Centaur_low",
+      "groups": [
+        {
+          "name": "C_Centaur:C_LO_Centaur_L_V1",
+          "offset": 465752,
+          "end": 468985,
+          "batches": [
+            {
+              "offset": 465795,
+              "list_indices": 408,
+              "strip_indices": [
+                467
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 467623,
+              "list_indices": 150,
+              "strip_indices": [
+                182
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 468365,
+              "list_indices": 93,
+              "strip_indices": [
+                117
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 468863,
+              "list_indices": 12,
+              "strip_indices": [
+                27
+              ],
+              "palette_entries": 4,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 676
+        },
+        {
+          "name": "C_Centaur:C_LO_Centaur_L_V1",
+          "offset": 469100,
+          "end": 470529,
+          "batches": [
+            {
+              "offset": 469143,
+              "list_indices": 426,
+              "strip_indices": [
+                235
+              ],
+              "palette_entries": 14,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 268
+        }
+      ]
+    },
+    {
+      "offset": 511468,
+      "vertices": 1240,
+      "base_vertices": 1240,
+      "referenced_vertices": 1240,
+      "source": "meshes\\chars\\c_centaur.msh",
+      "variant": "C_Centaur_C_LC_Centaur_low",
+      "groups": [
+        {
+          "name": "C_Centaur:C_LC_Centaur_L_V01",
+          "offset": 506090,
+          "end": 508872,
+          "batches": [
+            {
+              "offset": 506134,
+              "list_indices": 372,
+              "strip_indices": [
+                405
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 507766,
+              "list_indices": 210,
+              "strip_indices": [
+                206
+              ],
+              "palette_entries": 21,
+              "vertex_stream": "main"
+            },
+            {
+              "offset": 508676,
+              "list_indices": 12,
+              "strip_indices": [
+                62
+              ],
+              "palette_entries": 6,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 596
+        },
+        {
+          "name": "C_Centaur:C_LC_Centaur_L_V01",
+          "offset": 508987,
+          "end": 510345,
+          "batches": [
+            {
+              "offset": 509031,
+              "list_indices": 540,
+              "strip_indices": [
+                89
+              ],
+              "palette_entries": 10,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 231
+        },
+        {
+          "name": "C_Centaur:C_LC_Centaur_L_V01",
+          "offset": 510460,
+          "end": 511452,
+          "batches": [
+            {
+              "offset": 510504,
+              "list_indices": 342,
+              "strip_indices": [
+                106
+              ],
+              "palette_entries": 8,
+              "vertex_stream": "main"
+            }
+          ],
+          "triangles": 175
+        }
+      ]
+    }
+  ],
+  "visual_verification": {
+    "version": "2.0",
+    "scope": "primary main assembly",
+    "views": [
+      "shaded front",
+      "shaded side",
+      "shaded perspective"
+    ],
+    "backface_culling": true,
+    "preview": "v2_shaded.png",
+    "result": "recognizable static geometry; full asset extraction unfinished"
+  }
+}
