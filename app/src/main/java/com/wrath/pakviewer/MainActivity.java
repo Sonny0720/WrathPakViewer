@@ -111,7 +111,7 @@ public class MainActivity extends Activity {
   private void parseIndexedNames(){
     if(data.length<32||u32(0)!=335945)return;
     long count=u32(24), namesLength=u32(8);
-    if(count<1||count>100000||28L+4L*count>=data.length||namesEnd>data.length)return;
+    if(count<1||count>100000||28L+4L*count>=data.length)return;
     long base=28L+4L*count;
     long namesEnd=base+namesLength;
     if(namesEnd>data.length)return;
