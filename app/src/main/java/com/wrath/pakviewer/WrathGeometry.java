@@ -6,11 +6,11 @@ import java.util.*;
 import java.util.regex.*;
 import java.util.zip.*;
 
-/** Observed Xbox character layout. Geometry only: no rig, textures or PS2 claim. */
+/** Observed Xbox character and static environment geometry layouts. */
 public final class WrathGeometry {
     private WrathGeometry() {}
     private static final int[] FLOAT_FIELDS={0,4,8,16,20};
-    private static final Pattern NAME = Pattern.compile("C_[A-Za-z_0-9]+:[A-Za-z][A-Za-z_0-9]*");
+    private static final Pattern NAME = Pattern.compile("[A-Za-z][A-Za-z_0-9]*:[A-Za-z][A-Za-z_0-9]*");
     private static final Pattern VARIANT = Pattern.compile("(C_[^:]+):(C_[A-Z]{2}_[^_]+)_(.+)");
     private static long u32(byte[] b, int p) {
         return (b[p]&255L)|((b[p+1]&255L)<<8)|((b[p+2]&255L)<<16)|((b[p+3]&255L)<<24);
@@ -51,7 +51,7 @@ public final class WrathGeometry {
         public final List<int[]> faces=new ArrayList<>();
     }
     public static final class Buffer {
-        public int offset,end,count,baseCount; public String source,variant;
+        public int offset,end,count,baseCount,stride; public boolean world; public String source,variant;
         public final List<Group> groups=new ArrayList<>();
     }
     public static final class Result {
@@ -66,8 +66,8 @@ public final class WrathGeometry {
             for(Buffer b:buffers) {
                 Set<Integer> used=new HashSet<>();int triangles=0;
                 for(Group g:b.groups)for(int[] t:g.faces){triangles++;for(int i:t)used.add(i);}
-                s.append(String.format(Locale.US,"buffer=0x%X vertices=%d base=%d appended=%d referenced=%d triangles=%d source=%s variant=%s\n",
-                    b.offset,b.count,b.baseCount,b.count-b.baseCount,used.size(),triangles,b.source,b.variant));
+                s.append(String.format(Locale.US,"buffer=0x%X stride=%d world=%s vertices=%d base=%d appended=%d referenced=%d triangles=%d source=%s variant=%s\n",
+                    b.offset,b.stride,b.world,b.count,b.baseCount,b.count-b.baseCount,used.size(),triangles,b.source,b.variant));
                 for(Group g:b.groups)s.append(String.format(Locale.US,
                     "  name=%s offset=0x%X end=0x%X batches=%d list_indices=%d strip_indices=%d palette_entries=%d triangles=%d\n",
                     g.name,g.offset,g.end,g.batches,g.listIndices,g.stripIndices,g.paletteEntries,g.faces.size()));
@@ -80,11 +80,11 @@ public final class WrathGeometry {
             writer.write("# Xbox geometry; Y up.\nmtllib materials.mtl\n");
             for(Buffer b:selection) {
                 for(int i=0;i<b.count;i++) {
-                    int p=b.offset+8+32*i;
+                    int p=b.offset+8+b.stride*i;
                     writer.write("v "+Float.toString(f32(data,p))+" "+Float.toString(f32(data,p+4))+" "+Float.toString(f32(data,p+8))+"\n");
                 }
                 for(int i=0;i<b.count;i++) {
-                    int p=b.offset+8+32*i;
+                    int p=b.offset+8+b.stride*i;
                     writer.write("vt "+Float.toString(f32(data,p+16))+" "+Double.toString(1.0-f32(data,p+20))+"\n");
                 }
                 double[][] normals=normals(b);
@@ -106,7 +106,7 @@ public final class WrathGeometry {
             double[][] result=new double[buffer.count][3];
             for(Group group:buffer.groups)for(int[] face:group.faces) {
                 double[][] v=new double[3][3];
-                for(int j=0;j<3;j++)for(int k=0;k<3;k++)v[j][k]=f32(data,buffer.offset+8+32*face[j]+4*k);
+                for(int j=0;j<3;j++)for(int k=0;k<3;k++)v[j][k]=f32(data,buffer.offset+8+buffer.stride*face[j]+4*k);
                 double ux=v[1][0]-v[0][0],uy=v[1][1]-v[0][1],uz=v[1][2]-v[0][2];
                 double vx=v[2][0]-v[0][0],vy=v[2][1]-v[0][1],vz=v[2][2]-v[0][2];
                 for(int index:face){result[index][0]+=uy*vz-uz*vy;result[index][1]+=uz*vx-ux*vz;result[index][2]+=ux*vy-uy*vx;}
@@ -116,7 +116,7 @@ public final class WrathGeometry {
             return result;
         }
         public void writeZip(ZipOutputStream zip) throws IOException {
-            if(buffers.isEmpty())throw new IOException("No supported Xbox character geometry found");
+            if(buffers.isEmpty())throw new IOException("No supported Xbox geometry found");
             for(int i=0;i<buffers.size();i++) {
                 zip.putNextEntry(new ZipEntry(String.format(Locale.US,"parts/buffer_%02d.obj",i)));
                 writeObj(Collections.singletonList(buffers.get(i)),new OutputStreamWriter(zip,StandardCharsets.UTF_8));
@@ -133,12 +133,14 @@ public final class WrathGeometry {
                 writeObj(e.getValue(),new OutputStreamWriter(zip,StandardCharsets.UTF_8));zip.closeEntry();
             }
             Buffer first=buffers.get(0);List<Buffer> primary=new ArrayList<>();
-            for(Buffer b:buffers)if(b==first||(first.variant!=null&&first.variant.equals(b.variant)&&first.source.equals(b.source)))primary.add(b);
+            for(Buffer b:buffers)if(b.world)primary.add(b);
+            if(primary.isEmpty())for(Buffer b:buffers)
+                if(b==first||(first.variant!=null&&first.variant.equals(b.variant)&&first.source.equals(b.source)))primary.add(b);
             zip.putNextEntry(new ZipEntry("models/primary_model.obj"));
             writeObj(primary,new OutputStreamWriter(zip,StandardCharsets.UTF_8));zip.closeEntry();
             zip.putNextEntry(new ZipEntry("README.txt"));
-            zip.write(("WrathPakViewer v2.1\nOpen models/primary_model.obj first.\n"
-                +"parts/ contains individual buffers and material variants; these may be incomplete armor or attachments.\n"
+            zip.write(("WrathPakViewer v2.4\nOpen models/primary_model.obj first.\n"
+                +"parts/ contains individual buffers and character variants. For levels, the primary OBJ contains recovered world meshes; terrain and placement of standalone props remain unverified.\n"
                 +"OBJ uses Y up, counterclockwise faces and generated vertex normals.\n"
                 +"Models export includes PNG textures and MTL bindings. Source shader behavior, rigs, animation and PS2 support remain unfinished. See geometry_audit.txt.\n").getBytes(StandardCharsets.UTF_8));zip.closeEntry();
             zip.putNextEntry(new ZipEntry("geometry_audit.txt"));
@@ -189,7 +191,7 @@ public final class WrathGeometry {
     }
     public static Result decode(byte[] data) throws IOException {
         if(data.length<28||u32(data,0)!=0x52049)throw new IOException("Unsupported PAK header; expected observed Xbox layout");
-        Result result=new Result(data);List<Marker> markers=new ArrayList<>(),names=new ArrayList<>();
+        Result result=new Result(data);List<Marker> markers=new ArrayList<>(),names=new ArrayList<>(),worlds=new ArrayList<>();
         List<Buffer> candidates=new ArrayList<>();
         for(int p=0;p+8<=data.length;p++) {
             if(bytes(data,p,"meshes\\")) {
@@ -197,7 +199,16 @@ public final class WrathGeometry {
                 String name=new String(data,p,q-p,StandardCharsets.US_ASCII);
                 if(name.endsWith(".msh"))markers.add(new Marker(p,q,name));
             }
-            if(p>=4&&bytes(data,p,"C_")) {
+            if(p>=16&&bytes(data,p,"levels\\")) {
+                long n=u32(data,p-4), size=u32(data,p-16), payload=u32(data,p-12);
+                long end=p-16+size;
+                if(n>=12&&n<=128&&p+n<=data.length&&end<=data.length&&size==payload+n+32) {
+                    String name=new String(data,p,(int)n,StandardCharsets.US_ASCII).trim();
+                    if(name.matches("levels\\\\[A-Za-z0-9_./\\\\-]+[.]sls"))worlds.add(new Marker(p,(int)end,name));
+                }
+            }
+            if(p>=4&&data[p-3]==0&&data[p-2]==0&&data[p-1]==0
+                    && ((data[p]>='A'&&data[p]<='Z')||(data[p]>='a'&&data[p]<='z'))) {
                 long n=u32(data,p-4);
                 if(n>=4&&n<=160&&p+n<=data.length) {
                     String name=new String(data,p,(int)n,StandardCharsets.US_ASCII);
@@ -205,32 +216,59 @@ public final class WrathGeometry {
                 }
             }
             long cap=u32(data,p);
-            if(cap<128||cap>65536||(cap&(cap-1))!=0)continue;
-            long n=u32(data,p+4),end=(long)p+8+32*n;
-            if(n<=100||n>cap||end+24>data.length)continue;
-            int e=(int)end;boolean valid=true;
-            for(int i=e;i<e+16;i++)if(data[i]!=0){valid=false;break;}
-            if(!valid||u32(data,e+20)!=n)continue;
-            for(int i=0;i<n&&valid;i++)for(int f:FLOAT_FIELDS) {
-                float value=f32(data,p+8+32*i+f);
-                if(Float.isNaN(value)||Float.isInfinite(value)||Math.abs(value)>=100000){valid=false;break;}
+            if(cap<3||cap>65536)continue;
+            boolean powerOfTwo=(cap&(cap-1))==0;
+            Marker currentWorld=worlds.isEmpty()?null:worlds.get(worlds.size()-1);
+            boolean inWorld=currentWorld!=null&&p<currentWorld.end;
+            long n=u32(data,p+4);
+            if(n<3||n>cap)continue;
+            for(int stride=32;stride>=28;stride-=4) {
+                if(stride==32&&!powerOfTwo||stride==28&&(!inWorld||cap!=n))continue;
+                int padding=stride==32?16:8;
+                long end=(long)p+8+stride*n;
+                if(end+padding+8>data.length)continue;
+                int e=(int)end;
+                if(u32(data,e+padding+4)!=n)continue;
+                long base=u32(data,e+padding);
+                if(base==0||base>n)continue;
+                boolean valid=true;
+                for(int i=e;i<e+padding;i++)if(data[i]!=0){valid=false;break;}
+                if(!valid)continue;
+                for(int i=0;i<n&&valid;i++)for(int f:FLOAT_FIELDS) {
+                    float value=f32(data,p+8+stride*i+f);
+                    if(Float.isNaN(value)||Float.isInfinite(value)||Math.abs(value)>=100000){valid=false;break;}
+                }
+                if(valid) {
+                    Buffer b=new Buffer();
+                    b.offset=p;b.end=e;b.count=(int)n;b.baseCount=(int)base;b.stride=stride;
+                    candidates.add(b);
+                }
             }
-            if(valid){Buffer b=new Buffer();b.offset=p;b.end=e;b.count=(int)n;b.baseCount=(int)u32(data,e+16);if(b.baseCount>0&&b.baseCount<=b.count)candidates.add(b);}
         }
         int previous=0;
         for(Buffer b:candidates) {
-            Marker marker=null;for(Marker m:markers){if(m.start>=b.offset)break;marker=m;}
-            int floor=Math.max(previous,marker==null?0:marker.end);previous=b.end;
-            if(marker==null||!marker.name.toLowerCase(Locale.ROOT).startsWith("meshes\\chars\\"))continue;
-            b.source=marker.name;int consumed=floor;Set<String> variants=new HashSet<>();
+            Marker marker=null;
+            for(Marker m:markers){if(m.start>=b.offset)break;marker=m;}
+            Marker world=null;
+            for(Marker m:worlds)if(m.start<b.offset&&b.end<=m.end)world=m;
+            boolean character=world==null&&marker!=null&&marker.name.startsWith("meshes\\chars\\");
+            boolean prop=marker!=null&&marker.name.startsWith("meshes\\props\\");
+            if(character&&(b.stride!=32||b.count<=100||u32(data,b.offset)<128))continue;
+            if(!character&&!prop&&world==null)continue;
+            if(b.offset<previous)continue;
+            b.world=world!=null;
+            b.source=b.world?world.name:marker.name;
+            int floor=Math.max(previous,b.world?world.start:marker.end);
+            int consumed=floor;Set<String> variants=new HashSet<>();
             for(Marker name:names) {
-                if(name.start<consumed||name.start>=b.offset)continue;
+                if(name.start<consumed||name.start>=b.offset||(character&&!name.name.startsWith("C_")))continue;
                 try {
                     Group g=resource(data,name.end,b.offset,b.baseCount,b.count);
                     g.name=name.name;g.offset=name.start;b.groups.add(g);consumed=g.end;variants.add(variant(g.name));
                 } catch(Invalid invalid) {result.rejected.add(name.name+" @0x"+Integer.toHexString(name.start)+": "+invalid.getMessage());}
             }
             if(!b.groups.isEmpty()) {
+                previous=b.end;
                 b.variant=variants.size()==1?variants.iterator().next():null;
                 result.buffers.add(b);
             }

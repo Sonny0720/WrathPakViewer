@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
 
   @Override public void onCreate(Bundle state){super.onCreate(state);
     LinearLayout root=new LinearLayout(this);root.setOrientation(1);root.setPadding(16,12,16,12);
-    TextView title=new TextView(this);title.setText("WrathPakViewer · v2.3");title.setTextSize(22);root.addView(title);
+    TextView title=new TextView(this);title.setText("WrathPakViewer · v2.4");title.setTextSize(22);root.addView(title);
     Button open=button(root,"OPEN PAK FILE");open.setOnClickListener(v->{
       if(busy){Toast.makeText(this,"Wait for the current operation",Toast.LENGTH_SHORT).show();return;}
       busy=true;Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);i.setType("*/*");i.addCategory(Intent.CATEGORY_OPENABLE);startActivityForResult(i,OPEN);

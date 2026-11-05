@@ -61,6 +61,27 @@ class TextureTests(unittest.TestCase):
                 self.assertTrue(all(high<=1 for low,high in delta.getextrema()),(t.name,delta.getextrema()))
             return len(rows)
 
+    def test_static_world_obj_assembles_buffers_and_rebases_faces(self):
+        def mesh(name, x):
+            vertices=b''.join(struct.pack('<3fI2fI',*point,0,0.25,0.5,0)
+                              for point in ((x,0,0),(x+1,0,0),(x,0,1)))
+            batches=struct.pack('<6I3H3I',0,0,1,1,3,3,0,1,2,0,0,0)+bytes(8)
+            return (struct.pack('<I',len(name))+name+batches+bytes(24)
+                    +struct.pack('<2I',3,3)+vertices+bytes(8)+struct.pack('<2I',3,3))
+
+        path=b'levels\\test.sls'+bytes(2)
+        world=bytes(16)+mesh(b'Rock:Sand',0)+mesh(b'Ruin:Stone',10)
+        header=struct.pack('<4I',len(world)+len(path)+32,len(world),0,len(path))
+        archive=struct.pack('<I',0x52049)+bytes(24)+header+path+world
+        with self.export(archive,'models') as z:
+            obj=z.read('models/primary_model.obj').decode()
+            self.assertEqual(sum(line.startswith('v ') for line in obj.splitlines()),6)
+            self.assertIn('v 10.0 0.0 0.0',obj)
+            self.assertIn('f 1/1/1 3/3/3 2/2/2',obj)
+            self.assertIn('f 4/4/4 6/6/6 5/5/5',obj)
+            self.assertIn('usemtl sand',obj)
+            self.assertIn('usemtl stone',obj)
+
     def test_bc1_known_red(self):
         data=fixture();self.assertEqual(self.compare(data),1)
         with self.export(data) as z:
