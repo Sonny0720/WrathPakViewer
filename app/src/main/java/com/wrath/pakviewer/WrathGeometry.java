@@ -140,7 +140,7 @@ public final class WrathGeometry {
             writeObj(primary,new OutputStreamWriter(zip,StandardCharsets.UTF_8));zip.closeEntry();
             zip.putNextEntry(new ZipEntry("README.txt"));
             zip.write(("WrathPakViewer v2.4\nOpen models/primary_model.obj first.\n"
-                +"parts/ contains individual buffers and character variants. For levels, the primary OBJ contains recovered world meshes; terrain and placement of standalone props remain unverified.\n"
+                +"parts/ contains individual buffers and character variants. For levels, the primary OBJ contains recovered world meshes; full terrain coverage and placement of standalone props remain unverified.\n"
                 +"OBJ uses Y up, counterclockwise faces and generated vertex normals.\n"
                 +"Models export includes PNG textures and MTL bindings. Source shader behavior, rigs, animation and PS2 support remain unfinished. See geometry_audit.txt.\n").getBytes(StandardCharsets.UTF_8));zip.closeEntry();
             zip.putNextEntry(new ZipEntry("geometry_audit.txt"));

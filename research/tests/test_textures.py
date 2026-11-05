@@ -71,7 +71,8 @@ class TextureTests(unittest.TestCase):
 
         path=b'levels\\test.sls'+bytes(2)
         world=bytes(16)+mesh(b'Rock:Sand',0)+mesh(b'Ruin:Stone',10)
-        header=struct.pack('<4I',len(world)+len(path)+32,len(world),0,len(path))
+        payload_size=len(world)-16
+        header=struct.pack('<4I',payload_size+len(path)+32,payload_size,0,len(path))
         archive=struct.pack('<I',0x52049)+bytes(24)+header+path+world
         with self.export(archive,'models') as z:
             obj=z.read('models/primary_model.obj').decode()
