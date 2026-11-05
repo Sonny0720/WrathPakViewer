@@ -1,4 +1,16 @@
-plugins { id 'com.android.application' }
-android { namespace 'com.wrath.pakviewer'; compileSdk 35
-    defaultConfig { applicationId 'com.wrath.pakviewer'; minSdk 26; targetSdk 28; versionCode 16; versionName '1.6' }
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.wrath.pakviewer'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.wrath.pakviewer'
+        minSdk 26
+        targetSdk 28
+        versionCode 18
+        versionName '1.8'
+    }
 }
